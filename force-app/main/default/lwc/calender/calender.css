@@ -1,0 +1,36 @@
+template{
+    --background : rgb(94, 94, 94);
+    --daybackground : rgb(62, 59, 71);
+    --daybackgroundHover : rgb(101, 96, 116);
+    --bordercolor : white;
+}
+
+.each-day {
+    margin: 4px;
+    height: 180px;
+    width: auto;
+    background-color: var(--daybackground);
+    border: 1.5px solid var(--background);
+}
+
+.each-day:hover {
+    border-color: white;
+    background-color: var(--daybackgroundHover);
+}
+
+.each-month-grid {
+    background-color: var(--background);
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: 1fr;
+}
+
+.tint {
+    background-color: rgba(0,0,0,0.5);
+}
+
+.day-item {
+    color: white;
+    padding: 5px;
+    font-family: monospace;
+}
