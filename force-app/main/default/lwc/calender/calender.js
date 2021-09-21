@@ -4,17 +4,33 @@
  * @last modified by  : Vrushabh Uprikar
  * Modifications Log
  * Ver   Date         Author             Modification
- * 1.0   20-09-2021   Vrushabh Uprikar   Initial Version
+ * 1.0   21-09-2021   Vrushabh Uprikar   Initial Version
 **/
-import { LightningElement, track } from 'lwc';
+import { LightningElement, track, wire } from 'lwc';
 
-
-export default class Calender extends LightningElement {
+export default class Calender extends LightningElement 
+{
     date = new Date();
     dateArray = [];
     @track currMonth;
+    @track currYear;
     @track monthNAme = '';
-    testDays =[29,30,31,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,1,2];
+    monthNames = ["", "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        ];
+
+    weekdays=["Sun","Mon","Tues","Wed","Thu","Fri","Sat"]
+    connectedCallback()
+    {
+        let totalNumberOfDays = this.numberOfDaysInAMonth(this.date.getMonth() + 1, this.date.getFullYear());
+        console.log('totalNumberOfDays:', totalNumberOfDays);
+        this.creatDateArray(totalNumberOfDays);
+        this.currMonth = this.date.getMonth() + 1;
+        this.currYear = this.date.getFullYear();
+        this.getMonthName();
+        console.log('currYear:', this.currYear);
+    }
+
 
     /**
      * @param {Number} month month for which total no. of days in it will be returned.
@@ -58,55 +74,13 @@ export default class Calender extends LightningElement {
         console.log('this.dateArray   ' + this.dateArray);
     }
 
-    /**
-     * @description Creates the HTML calender dynamically
-     */
-    setCalendar() {
-        console.log('START setCalendar :');
-        let element = this.template.querySelector('[data-id="monthid"]');
-        console.log('element :', element);
-        if (element) {
-            element.innerHTML = this.createDays();
-        }
-
-    }
-
-    createDays() {
-        console.log('START createDays :');
-        let dateHTMLText = '';
-        this.dateArray.forEach(day => {
-            let dayItem = '<span class="day-item"> ' + day + ' </span>'
-            dateHTMLText += '<div class="grid-item" style="background-color: rgba(255, 255, 255, 0.8);border: 1px solid black;padding: 60px;font-size: 30px;text-align: center;">' + day + '</div>'
-        });
-        //console.log('dateHTMLText:', dateHTMLText);
-        return dateHTMLText;
-    }
-    connectedCallback()
-    {
-        this.currMonth = this.date.getMonth() + 1;
-    }
-
-    renderedCallback() {
-        console.log('START renderedCallback :');
-        let totalNumberOfDays = this.numberOfDaysInAMonth(this.date.getMonth() + 1, this.date.getFullYear());
-        
-        // will return total days of current month 
-        console.log('totalNumberOfDays:', totalNumberOfDays);
-        this.creatDateArray(totalNumberOfDays);
-        this.setCalendar();
-        console.log('this.currMonth:', this.currMonth);
-        this.any();
-    }
-
     handleClickNext() {
         console.log('handleClickNext:');
         this.currMonth++;
         let totalNumberOfDays = this.numberOfDaysInAMonth(this.currMonth, this.date.getFullYear());
         console.log('totalNumberOfDays:', totalNumberOfDays);
         this.creatDateArray(totalNumberOfDays);
-        this.setCalendar();
-        this.any();
-
+        this.getMonthName();
     }
 
     handleClickPre() {
@@ -115,15 +89,11 @@ export default class Calender extends LightningElement {
         let totalNumberOfDays = this.numberOfDaysInAMonth(this.currMonth, this.date.getFullYear());
         console.log('totalNumberOfDays:', totalNumberOfDays);
         this.creatDateArray(totalNumberOfDays);
-        this.setCalendar();
-        this.any();
+        this.getMonthName();
     }
-
-    any() {
-        var monthNames = ["","January", "February", "March", "April", "May", "June",
-            "July", "August", "September", "October", "November", "December"
-        ];
-        this.monthNAme = monthNames[this.currMonth];
+    getMonthName() {
+        
+        this.monthNAme = this.monthNames[this.currMonth];
         console.log('this.monthNAme:', this.monthNAme);
     }
 

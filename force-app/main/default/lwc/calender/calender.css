@@ -1,36 +1,29 @@
-template{
-    --background : rgb(94, 94, 94);
-    --daybackground : rgb(62, 59, 71);
-    --daybackgroundHover : rgb(101, 96, 116);
-    --bordercolor : white;
-}
 
 .each-day {
-    margin: 4px;
     height: 180px;
     width: auto;
-    background-color: var(--daybackground);
-    border: 1.5px solid var(--background);
+    border: 5px solid rgb(62, 59, 71);
+}
+
+
+.each-week {
+    height: 40px;
+    width: auto;
+    text-align: center;
+    border: 4px solid rgb(62, 59, 71);
 }
 
 .each-day:hover {
-    border-color: white;
-    background-color: var(--daybackgroundHover);
+    border-color: rgb(108, 209, 255);
 }
 
 .each-month-grid {
-    background-color: var(--background);
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     grid-template-rows: 1fr;
 }
 
-.tint {
-    background-color: rgba(0,0,0,0.5);
-}
-
 .day-item {
-    color: white;
+    color: black;
     padding: 5px;
-    font-family: monospace;
 }

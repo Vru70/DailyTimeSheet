@@ -4,34 +4,45 @@
   @last modified by  : Vrushabh Uprikar
   Modifications Log
   Ver   Date         Author             Modification
-  1.0   20-09-2021   Vrushabh Uprikar   Initial Version
+  1.0   21-09-2021   Vrushabh Uprikar   Initial Version
 -->
 <template>
   <lightning-card title="Timesheet">
-    <div>
-      <h2>{monthNAme}</h2>
-    </div>
-    <div>
-      <div class="slds-card">
+    <lightning-layout>
+      <lightning-layout-item>
         <lightning-button-group>
-          <lightning-button label="next"
-            onclick={handleClickNext}></lightning-button>
-          <lightning-button label="pre"
-            onclick={handleClickPre}></lightning-button>
+          <lightning-button-icon icon-name="utility:chevronleft"
+            alternative-text="Pre"
+            title="Previous"
+            onclick={handleClickPre}>
+          </lightning-button-icon>
+          <lightning-button-icon icon-name="utility:chevronright"
+            alternative-text="Next"
+            title="Next"
+            onclick={handleClickNext}>
+          </lightning-button-icon>
         </lightning-button-group>
-      </div>
-      <div class="slds-card slds-grid_vertical">
-        <template for:each={testDays}
-          for:item="con">
-          <div class="slds-grid slds-wrap"
-            key={con}>
-            <div class="slds-col slds-size_1-of-7">
-              <span>{con}</span>
-            </div>
-          </div>
-        </template>
-      </div>
+      </lightning-layout-item>
+      <lightning-layout-item padding="around-small">
+        <strong>{monthNAme} {currYear}</strong>
+      </lightning-layout-item>
+    </lightning-layout>
+    <div class="each-week each-month-grid">
+      <template if:true={weekdays}
+        for:each={weekdays}
+        for:item="day">
+        <span key={day}
+          class="day-item">{day}</span>
+      </template>
+    </div>
+    <div class="each-month-grid">
+      <template for:each={dateArray}
+        for:item="date">
+        <div key={date}
+          class="each-day">
+          <span class="day-item">{date}</span>
+        </div>
+      </template>
     </div>
   </lightning-card>
-
 </template>
