@@ -1,17 +1,20 @@
 /**
  * @author            : Vrushabh Uprikar
- * @last modified on  : 20-09-2021
+ * @last modified on  : 21-09-2021
  * @last modified by  : Vrushabh Uprikar
  * Modifications Log
  * Ver   Date         Author             Modification
  * 1.0   20-09-2021   Vrushabh Uprikar   Initial Version
 **/
-import { LightningElement } from 'lwc';
+import { LightningElement, track } from 'lwc';
 
 
 export default class Calender extends LightningElement {
     date = new Date();
     dateArray = [];
+    @track currMonth;
+    @track monthNAme = '';
+    testDays =[29,30,31,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,1,2];
 
     /**
      * @param {Number} month month for which total no. of days in it will be returned.
@@ -73,26 +76,55 @@ export default class Calender extends LightningElement {
         let dateHTMLText = '';
         this.dateArray.forEach(day => {
             let dayItem = '<span class="day-item"> ' + day + ' </span>'
-            dateHTMLText += '<div class="each-day">' + dayItem + '</div>'
+            dateHTMLText += '<div class="grid-item" style="background-color: rgba(255, 255, 255, 0.8);border: 1px solid black;padding: 60px;font-size: 30px;text-align: center;">' + day + '</div>'
         });
-        console.log('dateHTMLText:', dateHTMLText);
+        //console.log('dateHTMLText:', dateHTMLText);
         return dateHTMLText;
     }
+    connectedCallback()
+    {
+        this.currMonth = this.date.getMonth() + 1;
+    }
 
-    // connectedCallback() {
-    //     console.log('START connectedCallback :');
-    //     let totalNumberOfDays = this.numberOfDaysInAMonth(this.date.getMonth() + 1, this.date.getFullYear());
-    //     console.log('totalNumberOfDays:', totalNumberOfDays);
-    //     this.creatDateArray(totalNumberOfDays);
-    //     this.setCalendar();
-    // }
     renderedCallback() {
-        console.log('START connectedCallback :');
+        console.log('START renderedCallback :');
         let totalNumberOfDays = this.numberOfDaysInAMonth(this.date.getMonth() + 1, this.date.getFullYear());
+        
+        // will return total days of current month 
         console.log('totalNumberOfDays:', totalNumberOfDays);
         this.creatDateArray(totalNumberOfDays);
         this.setCalendar();
+        console.log('this.currMonth:', this.currMonth);
+        this.any();
+    }
 
+    handleClickNext() {
+        console.log('handleClickNext:');
+        this.currMonth++;
+        let totalNumberOfDays = this.numberOfDaysInAMonth(this.currMonth, this.date.getFullYear());
+        console.log('totalNumberOfDays:', totalNumberOfDays);
+        this.creatDateArray(totalNumberOfDays);
+        this.setCalendar();
+        this.any();
+
+    }
+
+    handleClickPre() {
+        console.log('handleClickPre:');
+        this.currMonth--;
+        let totalNumberOfDays = this.numberOfDaysInAMonth(this.currMonth, this.date.getFullYear());
+        console.log('totalNumberOfDays:', totalNumberOfDays);
+        this.creatDateArray(totalNumberOfDays);
+        this.setCalendar();
+        this.any();
+    }
+
+    any() {
+        var monthNames = ["","January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        ];
+        this.monthNAme = monthNames[this.currMonth];
+        console.log('this.monthNAme:', this.monthNAme);
     }
 
 }

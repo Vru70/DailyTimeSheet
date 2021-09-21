@@ -1,11 +1,37 @@
 <!--
   @author            : Vrushabh Uprikar
-  @last modified on  : 20-09-2021
+  @last modified on  : 21-09-2021
   @last modified by  : Vrushabh Uprikar
   Modifications Log
   Ver   Date         Author             Modification
   1.0   20-09-2021   Vrushabh Uprikar   Initial Version
 -->
 <template>
-    <div data-id="monthid" class="each-month-grid"></div>
+  <lightning-card title="Timesheet">
+    <div>
+      <h2>{monthNAme}</h2>
+    </div>
+    <div>
+      <div class="slds-card">
+        <lightning-button-group>
+          <lightning-button label="next"
+            onclick={handleClickNext}></lightning-button>
+          <lightning-button label="pre"
+            onclick={handleClickPre}></lightning-button>
+        </lightning-button-group>
+      </div>
+      <div class="slds-card slds-grid_vertical">
+        <template for:each={testDays}
+          for:item="con">
+          <div class="slds-grid slds-wrap"
+            key={con}>
+            <div class="slds-col slds-size_1-of-7">
+              <span>{con}</span>
+            </div>
+          </div>
+        </template>
+      </div>
+    </div>
+  </lightning-card>
+
 </template>
