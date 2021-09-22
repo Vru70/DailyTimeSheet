@@ -1,48 +1,63 @@
 <!--
   @author            : Vrushabh Uprikar
-  @last modified on  : 21-09-2021
+  @last modified on  : 22-09-2021
   @last modified by  : Vrushabh Uprikar
   Modifications Log
   Ver   Date         Author             Modification
   1.0   21-09-2021   Vrushabh Uprikar   Initial Version
 -->
 <template>
-  <lightning-card title="Timesheet">
-    <lightning-layout>
-      <lightning-layout-item>
-        <lightning-button-group>
-          <lightning-button-icon icon-name="utility:chevronleft"
-            alternative-text="Pre"
-            title="Previous"
-            onclick={handleClickPre}>
-          </lightning-button-icon>
-          <lightning-button-icon icon-name="utility:chevronright"
-            alternative-text="Next"
-            title="Next"
-            onclick={handleClickNext}>
-          </lightning-button-icon>
-        </lightning-button-group>
-      </lightning-layout-item>
-      <lightning-layout-item padding="around-small">
-        <strong>{monthNAme} {currYear}</strong>
-      </lightning-layout-item>
-    </lightning-layout>
-    <div class="each-week each-month-grid">
-      <template if:true={weekdays}
-        for:each={weekdays}
-        for:item="day">
-        <span key={day}
-          class="day-item">{day}</span>
-      </template>
-    </div>
-    <div class="each-month-grid">
-      <template for:each={dateArray}
-        for:item="date">
-        <div key={date}
-          class="each-day">
-          <span class="day-item">{date}</span>
-        </div>
-      </template>
-    </div>
-  </lightning-card>
+
+	<lightning-card>
+
+		<lightning-layout>
+
+			<lightning-layout-item>
+
+				<lightning-button-group>
+
+					<lightning-button-icon 
+						icon-name="utility:chevronleft"
+						alternative-text="Pre"
+						title="Previous"
+						onclick={handleClickPre}>
+					</lightning-button-icon>
+
+					<lightning-button-icon 
+						icon-name="utility:chevronright"
+						alternative-text="Next"
+						title="Next"
+						onclick={handleClickNext}>
+					</lightning-button-icon>
+
+				</lightning-button-group>
+
+			</lightning-layout-item>
+
+			<lightning-layout-item padding="around-small">
+				<strong>{monthNAme} {currYear}</strong>
+			</lightning-layout-item>
+
+		</lightning-layout>
+
+	
+
+		<div class="slds-grid slds-text-align_center">
+			<template for:each={weekdays} for:item="day">
+				<div class="slds-col slds-box slds-m-around_small" key={day}>
+					<div class="slds-tile"> {day} </div>
+				</div>
+			</template>
+		</div>
+	</lightning-card>
+		<div class="each-month-grid">
+			<template for:each={dateArray} for:item="date">
+				<div key={date} class="each-day">
+					<span class="day-item slds-text-align_center">{date}</span>
+				</div>
+			</template>
+		</div>
+
+	
+
 </template>
