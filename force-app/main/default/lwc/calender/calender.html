@@ -44,20 +44,20 @@
 
 		<div class="slds-grid slds-text-align_center">
 			<template for:each={weekdays} for:item="day">
-				<div class="slds-col slds-box slds-m-around_small" key={day}>
+				<div class="slds-col slds-box slds-m-around_small weeks" key={day}>
 					<div class="slds-tile"> {day} </div>
 				</div>
 			</template>
 		</div>
-	</lightning-card>
-		<div class="each-month-grid">
+	
+		<div class="each-month-grid slds-grid">
 			<template for:each={dateArray} for:item="date">
-				<div key={date} class="each-day">
-					<span class="day-item slds-text-align_center">{date}</span>
+				<div key={date} class="slds-col slds-box slds-m-around_small">
+					<span class="slds-tile">{date}</span>
 				</div>
 			</template>
 		</div>
 
-	
+	</lightning-card>
 
 </template>

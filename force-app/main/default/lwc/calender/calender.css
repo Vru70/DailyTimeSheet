@@ -5,13 +5,17 @@
     border: 5px solid rgb(62, 59, 71);
 }
 
-
-.each-week {
-    height: 40px;
-    width: auto;
-    text-align: center;
-    border: 4px solid rgb(62, 59, 71);
+.weeks:hover
+{
+  box-shadow: 0 0 5px #10bbff;
 }
+
+.weeks:hover::before
+{
+    transform: scale(1.1);
+    box-shadow: 0 0 15px #10bbff;
+}
+
 
 .each-day:hover {
     border-color: rgb(108, 209, 255);
