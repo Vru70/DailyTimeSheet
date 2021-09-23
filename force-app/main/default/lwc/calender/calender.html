@@ -16,15 +16,13 @@
 
 				<lightning-button-group>
 
-					<lightning-button-icon 
-						icon-name="utility:chevronleft"
+					<lightning-button-icon icon-name="utility:chevronleft"
 						alternative-text="Pre"
 						title="Previous"
 						onclick={handleClickPre}>
 					</lightning-button-icon>
 
-					<lightning-button-icon 
-						icon-name="utility:chevronright"
+					<lightning-button-icon icon-name="utility:chevronright"
 						alternative-text="Next"
 						title="Next"
 						onclick={handleClickNext}>
@@ -40,25 +38,37 @@
 
 		</lightning-layout>
 
-		 <div>
+		<div>
 			<div class="each-month-grid slds-grid slds-text-align_center">
-				<template for:each={weekdaysList} for:item="day">
-					<div class="slds-col slds-box slds-m-around_small weeks" key={day}>
+				<template for:each={weekdaysList}
+					for:item="day">
+					<div class="slds-col slds-box slds-m-around_small weeks"
+						key={day}>
 						<div class="slds-tile"> {day} </div>
 					</div>
 				</template>
 			</div>
-		
+
 			<div class="each-month-grid slds-grid ">
-				<template if:true={dateArray} for:each={dateArray} for:item="date">
-					<div key={date} class="slds-col slds-box slds-m-around_small" style="height: 180px;">
-						<span class="slds-tile">{date.day}</span>
+				<template if:true={dateArray}
+					for:each={dateArray}
+					for:item="date">
+					<div key={date}
+						class="slds-col slds-box slds-m-around_small"
+						style="height: 180px;">
+						<div class="slds-tile">{date.day}
+							<template if:true={date.Name}>
+								{date.Name}
+							</template>
+							<template if:true={date.Daily_Log}>
+								{date.Daily_Log}
+							</template>
+						</div>
 					</div>
 				</template>
 			</div>
 
-		</div> 
-		
+		</div>
 
 	</lightning-card>
 

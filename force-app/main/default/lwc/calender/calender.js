@@ -18,7 +18,7 @@ export default class Calender extends LightningElement {
 
     @track year = '2021';
 
-    logsData = []; // data from backend 
+    @track logsData = []; // data from backend 
 
     monthNameList = ["", "January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"];
@@ -32,7 +32,18 @@ export default class Calender extends LightningElement {
         console.log('crMonth : ', this.crMonth, ' this.crYear ', this.crYear);
         let totalNumberOfDays = this.numberOfDaysInAMonth(this.date.getMonth() + 1, this.date.getFullYear());
         console.log('totalNumberOfDays:', totalNumberOfDays);
-        this.creatDateArray(totalNumberOfDays);
+
+        getAllDailyLogs({ year: this.year })
+            .then(data => {
+                this.logsData = data;
+                console.log('data : ', JSON.stringify(data));
+            })
+            .then(_ => {
+                this.creatDateArray(totalNumberOfDays);
+            })
+            .catch(error => {
+                console.log('error : ', JSON.stringify(error));
+            });
     }
 
     numberOfDaysInAMonth(month, year) {
@@ -73,7 +84,7 @@ export default class Calender extends LightningElement {
         for (let i = 1; i <= totalNumberOfDays; i++) {
             let any =
             {
-                date:this.formatedDate(new Date(this.crYear,this.crMonth -1 ,i)), //'' + this.crYear + '-' + this.crMonth + '-' + i,
+                date: this.formatedDate(new Date(this.crYear, this.crMonth - 1, i)), //'' + this.crYear + '-' + this.crMonth + '-' + i,
                 day: i,
                 isDisable: false,
             };
@@ -92,27 +103,31 @@ export default class Calender extends LightningElement {
             };
             this.dateArray.push(any);
         }
-        console.log('this.dateArray  Final ' + JSON.stringify(this.dateArray));
+        console.log('this.dateArray  Final1 ' + JSON.stringify(this.dateArray));
+        console.log('this.logsData len:', this.logsData.length);
+
+        this.dateArray.map(any => {
+
+            this.logsData.forEach(ar => {
+
+                if (any.date == ar.Date__c) {
+                    any.Name = ar.Name;
+                    any.Daily_Log = ar.Daily_Log__c;
+                    any.Id = ar.Id;
+                }
+            });
+        });
+
+        console.log('this.dateArray  Final2 ' + JSON.stringify(this.dateArray));
+
     }
 
+    formatedDate(date) {
+        var d = date.getDate();
+        var m = date.getMonth() + 1;
+        var y = date.getFullYear();
+        return '' + y + '-' + (m <= 9 ? '0' + m : m) + '-' + (d <= 9 ? '0' + d : d);
 
-    @wire(getAllDailyLogs, { year: '$year' })
-    DailyLogs({ error, data }) {
-        if (data) {
-            this.logsData = data;
-            console.log('data : ', JSON.stringify(data));
-        } else if (error) {
-            console.log('error : ', JSON.stringify(error));
-        }
-    }
-
-    formatedDate(date) 
-    {
-            var d = date.getDate();
-            var m = date.getMonth() + 1;
-            var y = date.getFullYear();
-            return '' + y + '-' + (m<=9 ? '0' + m : m) + '-' + (d <= 9 ? '0' + d : d);
-        
     }
 
 }
