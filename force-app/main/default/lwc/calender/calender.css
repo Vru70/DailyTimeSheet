@@ -31,6 +31,12 @@
     grid-template-columns: repeat(7, 1fr);
     grid-template-rows: 1fr;
 }
+.each-month-total
+{
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    grid-template-rows: 1fr;
+}
 
 .day-item {
     color: black;

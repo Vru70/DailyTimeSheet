@@ -1,6 +1,6 @@
 <!--
   @author            : Vrushabh Uprikar
-  @last modified on  : 23-09-2021
+  @last modified on  : 24-09-2021
   @last modified by  : Vrushabh Uprikar
   Modifications Log
   Ver   Date         Author             Modification
@@ -10,66 +10,89 @@
 
 	<lightning-card>
 
-		<lightning-layout>
-
-			<lightning-layout-item>
-
-				<lightning-button-group>
-
-					<lightning-button-icon icon-name="utility:chevronleft"
-						alternative-text="Pre"
-						title="Previous"
-						onclick={handleClickPre}>
-					</lightning-button-icon>
-
-					<lightning-button-icon icon-name="utility:chevronright"
-						alternative-text="Next"
-						title="Next"
-						onclick={handleClickNext}>
-					</lightning-button-icon>
-
-				</lightning-button-group>
-
-			</lightning-layout-item>
-
-			<lightning-layout-item padding="around-small">
-				<strong>{monthName} {currYear}</strong>
-			</lightning-layout-item>
-
-		</lightning-layout>
-
-		<div>
-			<div class="each-month-grid slds-grid slds-text-align_center">
-				<template for:each={weekdaysList}
-					for:item="day">
-					<div class="slds-col slds-box slds-m-around_small weeks"
-						key={day}>
-						<div class="slds-tile"> {day} </div>
+		<div class="slds-grid slds-grid_vertical">
+			<div class="slds-col">
+				<div class="slds-grid slds-gutters slds-grid_align-center">
+					<div class="slds-col">
+						<lightning-button-icon icon-name="utility:chevronleft"
+							alternative-text="Pre"
+							title="Previous"
+							onclick={handleClickPrevious}>
+						</lightning-button-icon>
 					</div>
-				</template>
+					<div class="slds-col">
+						<lightning-layout-item padding="around-small">
+							<strong>{CURRUNET_MONTH_NAME} {currentYear}</strong>
+						</lightning-layout-item>
+					</div>
+					<div class="slds-col">
+						<lightning-button-icon icon-name="utility:chevronright"
+							alternative-text="Next"
+							title="Next"
+							onclick={handleClickNext}>
+						</lightning-button-icon>
+					</div>
+				</div>
 			</div>
+			<div class="slds-col">
+				<div class="slds-grid slds-wrap ">
 
-			<div class="each-month-grid slds-grid ">
-				<template if:true={dateArray}
-					for:each={dateArray}
-					for:item="date">
-					<div key={date}
-						class="slds-col slds-box slds-m-around_small"
-						style="height: 180px;">
-						<div class="slds-tile">{date.day}
-							<template if:true={date.Name}>
-								{date.Name}
+					<div class="slds-col slds-size_7-of-8">
+
+						<div class="slds-grid slds-text-align_center each-month-grid" >
+							<template for:each={weekDaysList}
+								for:item="day">
+								<div class="slds-col slds-box slds-m-around_small weeks"
+									key={day}>
+									<div class="slds-tile"> {day} </div>
+								</div>
 							</template>
-							<template if:true={date.Daily_Log}>
-								{date.Daily_Log}
+						</div>
+
+						<div class="each-month-grid slds-grid ">
+							<template if:true={dispMonthDates}
+								for:each={dispMonthDates}
+								for:item="date">
+								<div key={date}
+									class="slds-col slds-box slds-m-around_small"
+									style="height: 180px;">
+									<div class="slds-tile">
+										{date.day}
+										<template if:true={date.Name}>
+											{date.Name}
+										</template>
+										<template if:true={date.Daily_Log}>
+											{date.Daily_Log}
+										</template>
+									</div>
+								</div>
 							</template>
 						</div>
 					</div>
-				</template>
+
+					<div class="slds-col slds-size_1-of-8 slds-grid_vertical">
+						<div class="slds-grid slds-text-align_center" >
+							<div class="slds-col slds-box slds-m-around_small weeks">
+								<div class="slds-tile"> Total </div>
+							</div>
+						</div>
+						<div class="each-month-total slds-grid ">
+							<template if:true={totalHours}
+							for:each={totalHours}
+							for:item="con">
+							<div key={con}
+								class="slds-col slds-box slds-m-around_small"
+								style="height: 180px;">
+								<div class="slds-tile">
+									10Hr	
+								</div>
+							</div>
+						</template>
+						</div>
+						
+					</div>
+				</div>
 			</div>
-
 		</div>
-
 	</lightning-card>
-
 </template>

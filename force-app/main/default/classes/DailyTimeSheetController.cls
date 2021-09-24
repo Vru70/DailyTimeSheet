@@ -9,11 +9,10 @@
 public with sharing class DailyTimeSheetController 
 {
    @AuraEnabled(cacheable = true)
-   public static List<SObject> getAllDailyLogs(String year)
+   public static List<SObject> getAllDailyLogs(Integer year)
    {
-      Integer yearInt = integer.valueof(year);
-      List<SObject> dailyLogs = [Select Id, Name, Daily_Log__c, Date__c, Notes__c From Log_Hour__c Where CALENDAR_YEAR(Date__c) =:yearInt];
-      System.debug('yearInt: ' + dailyLogs);      
+      List<SObject> dailyLogs = [Select Id, Name, Daily_Log__c, Date__c, Notes__c From Log_Hour__c Where CALENDAR_YEAR(Date__c) =:year];
+      System.debug('yearInt new: ' + dailyLogs);      
       return dailyLogs;
    }
 }
