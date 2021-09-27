@@ -11,6 +11,7 @@ import getAllDailyLogs from '@salesforce/apex/DailyTimeSheetController.getAllDai
 
 export default class Calender extends LightningElement {
     @track todayDate;
+    @track dateTrack;
     @track currentYear;
     @track currentMonth;
     @track dispMonthDates = [];
@@ -20,32 +21,27 @@ export default class Calender extends LightningElement {
     CALENDER_GRID_LENGTH = 42;
     CURRUNET_MONTH_NAME = '';
 
-    monthNameList = ["January", "February", "March", "April", "May", "June",
+    MONTH_NAME_LIST = ["January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"];
 
-    weekDaysList = ["Sun", "Mon", "Tues", "Wed", "Thu", "Fri", "Sat"];
+    WEEK_DAYS_LIST = ["Sun", "Mon", "Tues", "Wed", "Thu", "Fri", "Sat"];
 
     connectedCallback() {
 
         this.todayDate = new Date();
-        this.currentMonth = this.todayDate.getMonth(); // return months 0 - 11
-        this.currentYear = this.todayDate.getFullYear();
-        this.CURRUNET_MONTH_NAME = this.monthNameList[this.currentMonth];
-        let totalNumberOfDays = this.numberOfDaysInAMonth(this.currentMonth + 1, this.currentYear);
-        this.setAllDailyLogs(this.currentYear, totalNumberOfDays);
+        this.dateTrack = this.todayDate;
+        this.setDateandCalDetails();
     }
 
     async setAllDailyLogs(year, totalNumberOfDays) {
         await getAllDailyLogs({ year: parseInt(year) }) // geting data from DailyTimeSheetController
             .then(data => {
                 this.dailyLogs = data;
-                console.log('data : ', JSON.stringify(data));
             })
             .then(async _ => {
                 this.createDisplayMonthDates(totalNumberOfDays);
             }).then(_temp => {
                 this.totalWorkingHrPerWeek();
-                console.log('totalHours:', this.totalHours);
             })
             .catch(error => {
                 console.log('error @ setAllDailyLogs : ', JSON.stringify(error));
@@ -59,13 +55,12 @@ export default class Calender extends LightningElement {
     createDisplayMonthDates(totalNumberOfDays) {
 
         const firstDayOfTheMonth = new Date(this.currentYear, this.currentMonth, 1);
-        console.log('firstDayOfTheMonth:', firstDayOfTheMonth);
+
         const dayOne = firstDayOfTheMonth.getDay(); // Sunday is 0, Monday is 1, and so on.
-        console.log('dayOne:', dayOne);
-        let noOfDaysInPreviousMonth = this.numberOfDaysInAMonth(this.currentYear, this.currentMonth); // issue
-        console.log('noOfDaysInPreviousMonth:', noOfDaysInPreviousMonth);
+
+        let noOfDaysInPreviousMonth = this.numberOfDaysInAMonth(this.currentYear, this.currentMonth);
+
         let noOfDaysToAdd = dayOne;
-        console.log('noOfDaysToAdd:', noOfDaysToAdd);
         let previousMonthDaysArray = [];
 
         for (let i = noOfDaysToAdd; i > 0; i--) {
@@ -78,7 +73,6 @@ export default class Calender extends LightningElement {
             noOfDaysInPreviousMonth--;
             previousMonthDaysArray.push(any);
         }
-        console.log('previousMonthDaysArray:', previousMonthDaysArray);
         this.dispMonthDates = [...previousMonthDaysArray.reverse()];
 
         for (let i = 1; i <= totalNumberOfDays; i++) {
@@ -117,8 +111,6 @@ export default class Calender extends LightningElement {
                 }
             });
         });
-
-        console.log('this.dispMonthDates  Final2 ' + JSON.stringify(this.dispMonthDates));
     }
 
     formatedDate(date) {
@@ -130,30 +122,17 @@ export default class Calender extends LightningElement {
     }
 
     handleClickPrevious() {
-        this.currentMonth--;// = this.todayDate.getMonth(); // return months 0 - 11
-        console.log('handleClickPrevious currentMonth ', this.currentMonth);
-        this.currentYear = this.todayDate.getFullYear();
-        this.CURRUNET_MONTH_NAME = this.monthNameList[this.currentMonth];
-        let totalNumberOfDays = this.numberOfDaysInAMonth(this.currentMonth + 1, this.currentYear);
-        this.setAllDailyLogs(this.currentYear, totalNumberOfDays);
-
+        this.dateTrack = new Date(this.currentYear, this.currentMonth - 1, 1);
+        this.setDateandCalDetails();
     }
 
     handleClickNext() {
-        this.currentMonth++;// = this.todayDate.getMonth(); // return months 0 - 11
-        console.log('handleClickNext currentMonth ', this.currentMonth);
-        this.currentYear = this.todayDate.getFullYear();
-        this.CURRUNET_MONTH_NAME = this.monthNameList[this.currentMonth];
-        let totalNumberOfDays = this.numberOfDaysInAMonth(this.currentMonth + 1, this.currentYear);
-        this.setAllDailyLogs(this.currentYear, totalNumberOfDays);
+        this.dateTrack = new Date(this.currentYear, this.currentMonth + 1, 1);
+        this.setDateandCalDetails();
     }
 
     isToday(date) {
-        if (date == this.formatedDate(this.todayDate)) {
-            return true;
-        } else {
-            return false;
-        }
+        return date == this.formatedDate(this.todayDate) ? true : false;
     }
 
     totalWorkingHrPerWeek() {
@@ -169,16 +148,22 @@ export default class Calender extends LightningElement {
                     }
                     count++;
                 }
-                tmepArry[i] = temp;    
+                tmepArry[i] = temp;
             }
             this.totalHours = tmepArry;
-            console.log('tmepArry ', tmepArry);
-            console.log('this.totalHours ', this.totalHours);
         }
         catch (error) {
             console.log('error @ totalWorkingHrPerWeek ', error);
 
         }
+    }
+
+    setDateandCalDetails() {
+        this.currentMonth = this.dateTrack.getMonth();
+        this.currentYear = this.dateTrack.getFullYear();
+        this.CURRUNET_MONTH_NAME = this.MONTH_NAME_LIST[this.currentMonth];
+        let totalNumberOfDays = this.numberOfDaysInAMonth(this.currentYear, this.currentMonth + 1);
+        this.setAllDailyLogs(this.currentYear, totalNumberOfDays);
     }
 
 }
