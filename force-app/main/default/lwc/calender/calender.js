@@ -55,11 +55,8 @@ export default class Calender extends LightningElement {
     createDisplayMonthDates(totalNumberOfDays) {
 
         const firstDayOfTheMonth = new Date(this.currentYear, this.currentMonth, 1);
-
         const dayOne = firstDayOfTheMonth.getDay(); // Sunday is 0, Monday is 1, and so on.
-
         let noOfDaysInPreviousMonth = this.numberOfDaysInAMonth(this.currentYear, this.currentMonth);
-
         let noOfDaysToAdd = dayOne;
         let previousMonthDaysArray = [];
 
@@ -96,7 +93,6 @@ export default class Calender extends LightningElement {
             };
             this.dispMonthDates.push(any);
         }
-
 
         this.dispMonthDates.map(date1 => {
 
@@ -139,7 +135,6 @@ export default class Calender extends LightningElement {
         try {
             var count = 0;
             var tmepArry = [];
-            // calcukate total working 
             for (let i = 0; i < 6; i++) {
                 var temp = 0;
                 for (let j = 0; j < 7; j++) {
