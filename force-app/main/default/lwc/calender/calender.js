@@ -1,6 +1,6 @@
 /**
  * @author            : Vrushabh Uprikar
- * @last modified on  : 24-09-2021
+ * @last modified on  : 27-09-2021
  * @last modified by  : Vrushabh Uprikar
  * Modifications Log
  * Ver   Date         Author             Modification
@@ -15,7 +15,7 @@ export default class Calender extends LightningElement {
     @track currentMonth;
     @track dispMonthDates = [];
     @track dailyLogs = [];
-    totalHours=[1,2,3,4,5,6];
+    @track totalHours = [];
 
     CALENDER_GRID_LENGTH = 42;
     CURRUNET_MONTH_NAME = '';
@@ -32,22 +32,24 @@ export default class Calender extends LightningElement {
         this.currentYear = this.todayDate.getFullYear();
         this.CURRUNET_MONTH_NAME = this.monthNameList[this.currentMonth];
         let totalNumberOfDays = this.numberOfDaysInAMonth(this.currentMonth + 1, this.currentYear);
-        this.setAllDailyLogs(this.currentYear, totalNumberOfDays);   
+        this.setAllDailyLogs(this.currentYear, totalNumberOfDays);
     }
 
-    setAllDailyLogs(year,totalNumberOfDays)
-    {
-        getAllDailyLogs({ year: parseInt(year) }) // geting data from DailyTimeSheetController
-        .then(data => {
-            this.dailyLogs = data;
-            console.log('data : ', JSON.stringify(data));
-        })
-        .then(_ => {
-            this.createDisplayMonthDates(totalNumberOfDays);
-        })
-        .catch(error => {
-            console.log('error : ', JSON.stringify(error));
-        });
+    async setAllDailyLogs(year, totalNumberOfDays) {
+        await getAllDailyLogs({ year: parseInt(year) }) // geting data from DailyTimeSheetController
+            .then(data => {
+                this.dailyLogs = data;
+                console.log('data : ', JSON.stringify(data));
+            })
+            .then(async _ => {
+                this.createDisplayMonthDates(totalNumberOfDays);
+            }).then(_temp => {
+                this.totalWorkingHrPerWeek();
+                console.log('totalHours:', this.totalHours);
+            })
+            .catch(error => {
+                console.log('error @ setAllDailyLogs : ', JSON.stringify(error));
+            });
     }
 
     numberOfDaysInAMonth(year, month) {
@@ -69,7 +71,7 @@ export default class Calender extends LightningElement {
         for (let i = noOfDaysToAdd; i > 0; i--) {
             let any =
             {
-                date: this.formatedDate(new Date(this.currentYear, this.currentMonth - 1, noOfDaysInPreviousMonth )),
+                date: this.formatedDate(new Date(this.currentYear, this.currentMonth - 1, noOfDaysInPreviousMonth)),
                 day: noOfDaysInPreviousMonth,
                 isDisable: true,
             };
@@ -102,20 +104,21 @@ export default class Calender extends LightningElement {
         }
 
 
-        this.dispMonthDates.map(any => {
+        this.dispMonthDates.map(date1 => {
 
-            this.dailyLogs.forEach(ar => {
+            this.dailyLogs.forEach(date2 => {
 
-                if (any.date == ar.Date__c) {
-                    any.Name = ar.Name;
-                    any.Daily_Log = ar.Daily_Log__c;
-                    any.Id = ar.Id;
+                if (date1.date == date2.Date__c) {
+                    date1.Daily_Log = date2.Daily_Log__c ? parseInt(date2.Daily_Log__c) : 0;
+                    date1.isToday = this.isToday(date1.date);
+                } else {
+                    date1.Daily_Log = 0;
+                    date1.isToday = this.isToday(date1.date);
                 }
             });
         });
 
         console.log('this.dispMonthDates  Final2 ' + JSON.stringify(this.dispMonthDates));
-
     }
 
     formatedDate(date) {
@@ -126,38 +129,56 @@ export default class Calender extends LightningElement {
 
     }
 
-
-    handleClickPrevious()
-    {
+    handleClickPrevious() {
         this.currentMonth--;// = this.todayDate.getMonth(); // return months 0 - 11
         console.log('handleClickPrevious currentMonth ', this.currentMonth);
         this.currentYear = this.todayDate.getFullYear();
         this.CURRUNET_MONTH_NAME = this.monthNameList[this.currentMonth];
         let totalNumberOfDays = this.numberOfDaysInAMonth(this.currentMonth + 1, this.currentYear);
-        this.setAllDailyLogs(this.currentYear, totalNumberOfDays); 
+        this.setAllDailyLogs(this.currentYear, totalNumberOfDays);
 
     }
 
-
-    handleClickNext()
-    {
+    handleClickNext() {
         this.currentMonth++;// = this.todayDate.getMonth(); // return months 0 - 11
         console.log('handleClickNext currentMonth ', this.currentMonth);
         this.currentYear = this.todayDate.getFullYear();
         this.CURRUNET_MONTH_NAME = this.monthNameList[this.currentMonth];
         let totalNumberOfDays = this.numberOfDaysInAMonth(this.currentMonth + 1, this.currentYear);
-        this.setAllDailyLogs(this.currentYear, totalNumberOfDays); 
+        this.setAllDailyLogs(this.currentYear, totalNumberOfDays);
     }
 
-    setToday()
-    {
-        // setting current setting
+    isToday(date) {
+        if (date == this.formatedDate(this.todayDate)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    totalWorkingHrPerWeek()
-    {
-// calcukate total working 
+    totalWorkingHrPerWeek() {
+        try {
+            var count = 0;
+            var tmepArry = [];
+            // calcukate total working 
+            for (let i = 0; i < 6; i++) {
+                var temp = 0;
+                for (let j = 0; j < 7; j++) {
+                    if (this.dispMonthDates[count].Daily_Log) {
+                        temp = temp + this.dispMonthDates[count].Daily_Log;
+                    }
+                    count++;
+                }
+                tmepArry[i] = temp;    
+            }
+            this.totalHours = tmepArry;
+            console.log('tmepArry ', tmepArry);
+            console.log('this.totalHours ', this.totalHours);
+        }
+        catch (error) {
+            console.log('error @ totalWorkingHrPerWeek ', error);
+
+        }
     }
 
-    //bilable and Non billable things
 }

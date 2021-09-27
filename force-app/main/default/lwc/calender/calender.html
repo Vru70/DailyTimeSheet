@@ -1,6 +1,6 @@
 <!--
   @author            : Vrushabh Uprikar
-  @last modified on  : 24-09-2021
+  @last modified on  : 27-09-2021
   @last modified by  : Vrushabh Uprikar
   Modifications Log
   Ver   Date         Author             Modification
@@ -58,11 +58,9 @@
 									style="height: 180px;">
 									<div class="slds-tile">
 										{date.day}
-										<template if:true={date.Name}>
-											{date.Name}
-										</template>
+										<br />
 										<template if:true={date.Daily_Log}>
-											{date.Daily_Log}
+											<h3>DailyLog : {date.Daily_Log}</h3>
 										</template>
 									</div>
 								</div>
@@ -77,14 +75,12 @@
 							</div>
 						</div>
 						<div class="each-month-total slds-grid ">
-							<template if:true={totalHours}
-							for:each={totalHours}
-							for:item="con">
+							<template for:each={totalHours} for:item="con">
 							<div key={con}
 								class="slds-col slds-box slds-m-around_small"
 								style="height: 180px;">
 								<div class="slds-tile">
-									10Hr	
+									Total Hr : {con}
 								</div>
 							</div>
 						</template>
