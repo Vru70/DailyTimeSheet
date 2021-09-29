@@ -1,6 +1,6 @@
 /**
  * @author            : Vrushabh Uprikar
- * @last modified on  : 24-09-2021
+ * @last modified on  : 28-09-2021
  * @last modified by  : Vrushabh Uprikar
  * Modifications Log
  * Ver   Date         Author             Modification
@@ -15,5 +15,11 @@ public with sharing class DailyTimeSheetController
       System.debug('yearInt new: ' + dailyLogs);      
       return dailyLogs;
    }
+
+   // @AuraEnabled
+   // public string upsertDailyLogOnDateSelection(Date date, )
+   // {
+      
+   // }
 }
 

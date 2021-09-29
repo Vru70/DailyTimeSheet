@@ -39,7 +39,7 @@
 
 					<div class="slds-col slds-size_7-of-8">
 
-						<div class="slds-grid slds-text-align_center each-month-grid" >
+						<div class="slds-grid slds-text-align_center each-month-grid">
 							<template for:each={WEEK_DAYS_LIST}
 								for:item="day">
 								<div class="slds-col slds-box slds-m-around_small weeks"
@@ -54,10 +54,12 @@
 								for:each={dispMonthDates}
 								for:item="date">
 								<div key={date}
+									id={date.date}
 									class="slds-col slds-box slds-m-around_small"
-									style="height: 180px;">
+									style="height: 180px;"
+									onclick={onClickOfDate}>
 									<div class="slds-tile">
-										{date.day}
+										{date.day} 
 										<br />
 										<template if:true={date.Daily_Log}>
 											<h3>DailyLog : {date.Daily_Log}</h3>
@@ -69,23 +71,24 @@
 					</div>
 
 					<div class="slds-col slds-size_1-of-8 slds-grid_vertical">
-						<div class="slds-grid slds-text-align_center" >
+						<div class="slds-grid slds-text-align_center">
 							<div class="slds-col slds-box slds-m-around_small weeks">
 								<div class="slds-tile"> Total </div>
 							</div>
 						</div>
 						<div class="each-month-total slds-grid ">
-							<template for:each={totalHours} for:item="con">
-							<div key={con}
-								class="slds-col slds-box slds-m-around_small"
-								style="height: 180px;">
-								<div class="slds-tile">
-									Total Hr : {con}
+							<template for:each={totalHours}
+								for:item="con">
+								<div key={con}
+									class="slds-col slds-box slds-m-around_small"
+									style="height: 180px;">
+									<div class="slds-tile">
+										Total Hr : {con}
+									</div>
 								</div>
-							</div>
-						</template>
+							</template>
 						</div>
-						
+
 					</div>
 				</div>
 			</div>
