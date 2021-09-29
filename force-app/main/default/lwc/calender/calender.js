@@ -1,6 +1,6 @@
 /**
  * @author            : Vrushabh Uprikar
- * @last modified on  : 27-09-2021
+ * @last modified on  : 28-09-2021
  * @last modified by  : Vrushabh Uprikar
  * Modifications Log
  * Ver   Date         Author             Modification
@@ -101,9 +101,12 @@ export default class Calender extends LightningElement {
                 if (date1.date == date2.Date__c) {
                     date1.Daily_Log = date2.Daily_Log__c ? parseInt(date2.Daily_Log__c) : 0;
                     date1.isToday = this.isToday(date1.date);
+                    date1.Id = date2.Id;
+
                 } else {
                     date1.Daily_Log = 0;
                     date1.isToday = this.isToday(date1.date);
+                    date1.Id = 'none';
                 }
             });
         });
@@ -160,5 +163,16 @@ export default class Calender extends LightningElement {
         let totalNumberOfDays = this.numberOfDaysInAMonth(this.currentYear, this.currentMonth + 1);
         this.setAllDailyLogs(this.currentYear, totalNumberOfDays);
     }
+
+    onClickOfDate(event) {
+        console.log('event.id', event.currentTarget.id);
+        console.log('event.key', event.target.key);
+
+    }
+
+    // onEditDailyLog(event)
+    // {
+
+    // }
 
 }
