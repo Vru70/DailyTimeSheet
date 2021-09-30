@@ -1,6 +1,6 @@
 /**
  * @author            : Vrushabh Uprikar
- * @last modified on  : 28-09-2021
+ * @last modified on  : 30-09-2021
  * @last modified by  : Vrushabh Uprikar
  * Modifications Log
  * Ver   Date         Author             Modification
@@ -8,6 +8,12 @@
 **/
 import { LightningElement, track } from 'lwc';
 import getAllDailyLogs from '@salesforce/apex/DailyTimeSheetController.getAllDailyLogs';
+import TASK_FIELD from '@salesforce/schema/Log_Hour__c.Task__c';
+import DATE_FIELD from '@salesforce/schema/Log_Hour__c.Date__c';
+import DAILY_LOGS_FIELD from '@salesforce/schema/Log_Hour__c.Daily_Log__c';
+import NOTES_FIELD from '@salesforce/schema/Log_Hour__c.Notes__c';
+import PROJECT_FIELD from '@salesforce/schema/Log_Hour__c.Project__c';
+import EMPLOYEE_FIELD from '@salesforce/schema/Log_Hour__c.Employee__c';
 
 export default class Calender extends LightningElement {
     @track todayDate;
@@ -17,9 +23,18 @@ export default class Calender extends LightningElement {
     @track dispMonthDates = [];
     @track dailyLogs = [];
     @track totalHours = [];
+    @track showModal = false;
+    @track isEditFrom = false;
+    @track isCreateFrom = false;
+    @track recordId = '';
+    @track selectedDate;
 
     CALENDER_GRID_LENGTH = 42;
     CURRUNET_MONTH_NAME = '';
+
+    OBJECT_API_NAME = 'Log_Hour__c';
+
+    fields = [TASK_FIELD, DATE_FIELD, DAILY_LOGS_FIELD, NOTES_FIELD, PROJECT_FIELD, EMPLOYEE_FIELD];
 
     MONTH_NAME_LIST = ["January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"];
@@ -164,15 +179,76 @@ export default class Calender extends LightningElement {
         this.setAllDailyLogs(this.currentYear, totalNumberOfDays);
     }
 
-    onClickOfDate(event) {
-        console.log('event.id', event.currentTarget.id);
-        console.log('event.key', event.target.key);
-
+    onClickOfDate(event)
+    {
+        var onClickedDate = event.currentTarget.id.slice(0, 10);
+        console.log('onClickedDate', onClickedDate);
+        let objectData = this.checkDateIsAvailable(onClickedDate);
+        console.log('objectData:', objectData);
+        if (objectData)
+        {
+            this.setEditForm();
+        } else
+        {
+            this.selectedDate = onClickedDate;
+            this.setCreateForm();
+        }
+        this.openModal();
     }
 
-    // onEditDailyLog(event)
-    // {
+    checkDateIsAvailable(onClickedDate)
+    {
+        this.dailyLogs.forEach(key =>
+        {
+            if (key.Date__c == onClickedDate)
+            {
+                this.recordID = key.Id;
+            } 
+        });
 
-    // }
+        if(this.recordID)
+        {
+            return this.recordID;
+        }else{
+            return false;
+        }
+    }
 
+    setEditForm() {
+        this.isEditFrom = true;
+        this.isCreateFrom = false;
+    }
+
+    setCreateForm() {
+        this.isEditFrom = false;
+        this.isCreateFrom = true;
+    }
+
+    openModal() {
+        console.log('opening the model now');
+        this.showModal = true;
+    }
+
+    closeModal() {
+        console.log('closing the model now');
+        this.showModal = false;
+    }
+
+    handleCancel() {
+        console.log('handling cancel now');
+        closeModel();
+    }
+
+    handleSubmit() {
+        console.log('submitted:');
+        closeModel();
+    }
+
+    editSuccess() {
+        console.log('editSuccess:');
+        closeModel();
+    }
 }
+
+
+// tost and error handling lib
