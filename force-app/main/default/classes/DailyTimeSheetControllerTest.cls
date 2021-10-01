@@ -1,3 +1,11 @@
+/**
+ * @author            : Vrushabh Uprikar
+ * @last modified on  : 01-10-2021
+ * @last modified by  : Vrushabh Uprikar
+ * Modifications Log
+ * Ver   Date         Author             Modification
+ * 1.0   01-10-2021   Vrushabh Uprikar   Initial Version
+**/
 @isTest
 public class DailyTimeSheetControllerTest 
 {
@@ -11,7 +19,7 @@ public class DailyTimeSheetControllerTest
         Log_Hour__c logHour = new Log_Hour__c();
         logHour.Task__c = task.Id;
         logHour.Date__c = date.newInstance(2021, 09, 15);
-        logHour.Daily_Log__c = 8;
+        logHour.Daily_Log_Hour__c = 8;
         insert logHour;
         
         List<SObject> listSobject = DailyTimeSheetController.getAllDailyLogs(2021);

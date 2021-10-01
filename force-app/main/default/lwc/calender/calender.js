@@ -10,10 +10,12 @@ import { LightningElement, track } from 'lwc';
 import getAllDailyLogs from '@salesforce/apex/DailyTimeSheetController.getAllDailyLogs';
 import TASK_FIELD from '@salesforce/schema/Log_Hour__c.Task__c';
 import DATE_FIELD from '@salesforce/schema/Log_Hour__c.Date__c';
-import DAILY_LOGS_FIELD from '@salesforce/schema/Log_Hour__c.Daily_Log__c';
+import DAILY_LOGS_HOUR_FIELD from '@salesforce/schema/Log_Hour__c.Daily_Log_Hour__c';
+import DAILY_LOGS_MINS_FIELD from '@salesforce/schema/Log_Hour__c.Daily_Log_Mins__c';
 import NOTES_FIELD from '@salesforce/schema/Log_Hour__c.Notes__c';
 import PROJECT_FIELD from '@salesforce/schema/Log_Hour__c.Project__c';
 import EMPLOYEE_FIELD from '@salesforce/schema/Log_Hour__c.Employee__c';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 export default class Calender extends LightningElement {
     @track todayDate;
@@ -26,7 +28,7 @@ export default class Calender extends LightningElement {
     @track showModal = false;
     @track isEditFrom = false;
     @track isCreateFrom = false;
-    @track recordId = '';
+    @track recordID = '';
     @track selectedDate;
 
     CALENDER_GRID_LENGTH = 42;
@@ -34,7 +36,7 @@ export default class Calender extends LightningElement {
 
     OBJECT_API_NAME = 'Log_Hour__c';
 
-    fields = [TASK_FIELD, DATE_FIELD, DAILY_LOGS_FIELD, NOTES_FIELD, PROJECT_FIELD, EMPLOYEE_FIELD];
+    fields = [TASK_FIELD, DATE_FIELD, DAILY_LOGS_HOUR_FIELD, DAILY_LOGS_MINS_FIELD, NOTES_FIELD, PROJECT_FIELD, EMPLOYEE_FIELD];
 
     MONTH_NAME_LIST = ["January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"];
@@ -82,7 +84,8 @@ export default class Calender extends LightningElement {
                 date: this.formatedDate(new Date(this.currentYear, this.currentMonth - 1, noOfDaysInPreviousMonth)),
                 day: noOfDaysInPreviousMonth,
                 isDisable: true,
-                Daily_Log: 0,
+                Daily_Log_Hr: 0,
+                Daily_Log_Min: 0,
 
             };
             noOfDaysInPreviousMonth--;
@@ -97,7 +100,8 @@ export default class Calender extends LightningElement {
                 date: this.formatedDate(new Date(this.currentYear, this.currentMonth, i)), //'' + this.currentYear + '-' + this.currentMonth + '-' + i,
                 day: i,
                 isDisable: false,
-                Daily_Log: 0,
+                Daily_Log_Hr: 0,
+                Daily_Log_Min: 0,
 
             };
             this.dispMonthDates.push(any);
@@ -112,7 +116,8 @@ export default class Calender extends LightningElement {
                 date: this.formatedDate(new Date(this.currentYear, this.currentMonth + 1, i)),
                 day: i,
                 isDisable: false,
-                Daily_Log: 0,
+                Daily_Log_Hr: 0,
+                Daily_Log_Min: 0,
 
             };
             this.dispMonthDates.push(any);
@@ -126,7 +131,8 @@ export default class Calender extends LightningElement {
                     date1.Notes = date2.Notes__c;
                     date1.Name = date2.Name;
                     date1.Task = date2.Task__c;
-                    date1.Daily_Log = date2.Daily_Log__c ? parseInt(date2.Daily_Log__c) : 0;
+                    date1.Daily_Log_Hr = date2.Daily_Log_Hour__c  ? parseInt(date2.Daily_Log_Hour__c ) : 0;
+                    date1.Daily_Log_Min = date2.Daily_Log_Mins__c  ? parseInt(date2.Daily_Log_Mins__c ) : 0;
                     date1.Project = date2.Project__c;
                     date1.Employee = date2.Employee__c;
 
@@ -195,7 +201,7 @@ export default class Calender extends LightningElement {
         var onClickedDate = event.currentTarget.id.slice(0, 10);
         console.log('onClickedDate', onClickedDate);
         let objectData = this.checkDateIsAvailable(onClickedDate);
-        console.log('objectData:', objectData);
+        console.log('objectData Record ID:', objectData);
         if (objectData) {
             this.setEditForm();
         } else {
@@ -205,14 +211,18 @@ export default class Calender extends LightningElement {
         this.openModal();
     }
 
-    checkDateIsAvailable(onClickedDate) {
-        this.dailyLogs.forEach(key => {
-            if (key.Date__c == onClickedDate) {
+    checkDateIsAvailable(onClickedDate)
+    {
+        this.dailyLogs.forEach(key =>
+        {
+            if (key.Date__c == onClickedDate)
+            {
                 this.recordID = key.Id;
             }
         });
 
-        if (this.recordID) {
+        if (this.recordID)
+        {
             return this.recordID;
         } else {
             return false;
@@ -251,6 +261,26 @@ export default class Calender extends LightningElement {
 
     editSuccess() {
         console.log('editSuccess:');
+        closeModel();
+    }
+
+    handleSuccessNew(event) {
+        const evt = new ShowToastEvent({
+            title: "Record created",
+            message: "Record ID: " + event.detail.id,
+            variant: "success"
+        });
+        this.dispatchEvent(evt);
+        closeModel();
+    }
+
+    handleSuccessEdit(event) {
+        const evt = new ShowToastEvent({
+            title: "Record Updated",
+            message: "Record ID: " + event.detail.id,
+            variant: "success"
+        });
+        this.dispatchEvent(evt);
         closeModel();
     }
 }

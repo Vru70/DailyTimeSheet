@@ -1,6 +1,6 @@
 <!--
   @author            : Vrushabh Uprikar
-  @last modified on  : 30-09-2021
+  @last modified on  : 01-10-2021
   @last modified by  : Vrushabh Uprikar
   Modifications Log
   Ver   Date         Author             Modification
@@ -58,9 +58,13 @@
 									<div class="slds-tile">
 										{date.day}
 										<br />
-										<template if:true={date.Daily_Log}>
-											<h3>DailyLog : {date.Daily_Log}</h3>
+										<template if:true={date.Daily_Log_Hr}>
+											<div class="slds-text-color_success">
+												<h2>{date.Daily_Log_Hr}:{date.Daily_Log_Min}</h2>
+											</div>
 										</template>
+
+
 									</div>
 								</div>
 							</template>
@@ -84,6 +88,7 @@
 													<lightning-icon icon-name="utility:close"
 														alternative-text="close"
 														variant="inverse"
+														class="blackColor"
 														size="small"></lightning-icon>
 													<span class="slds-assistive-text">Close</span>
 												</button>
@@ -97,15 +102,29 @@
 												<lightning-record-edit-form object-api-name={OBJECT_API_NAME}
 													columns="1"
 													mode="edit"
-													onsuccess={handleSuccess}>
+													onsuccess={handleSuccessNew}>
+													<lightning-input-field field-name='Task__c'>
+													</lightning-input-field>
+
 													<lightning-input-field field-name='Date__c'
 														value={selectedDate}></lightning-input-field>
-													<div class="slds-m-top_medium">
-														<lightning-input-field field-name='Task__c'>
-														</lightning-input-field>
-														<lightning-input-field field-name='Daily_Log__c'>
-														</lightning-input-field>
 
+													<lightning-input-field field-name='Daily_Log_Hour__c'>
+													</lightning-input-field>
+
+													<lightning-input-field field-name='Daily_Log_Mins__c'>
+													</lightning-input-field>
+
+													<lightning-input-field field-name='Notes__c'>
+													</lightning-input-field>
+
+													<lightning-input-field field-name='Project__c'>
+													</lightning-input-field>
+
+													<lightning-input-field field-name='Employee__c'>
+													</lightning-input-field>
+
+													<div class="slds-m-top_medium">
 														<lightning-button class="slds-m-top_small"
 															label="Cancel"
 															onclick={closeModal}></lightning-button>
@@ -114,7 +133,6 @@
 															label="Save"></lightning-button>
 													</div>
 												</lightning-record-edit-form>
-
 
 											</div>
 										</div>
@@ -132,24 +150,51 @@
 													<lightning-icon icon-name="utility:close"
 														alternative-text="close"
 														variant="inverse"
+														class="blackColor"
 														size="small"></lightning-icon>
 													<span class="slds-assistive-text">Close</span>
 												</button>
 												<h2 id="modal-heading-02"
-													class="slds-text-heading_medium slds-hyphenate">Edit New Log</h2>
+													class="slds-text-heading_medium slds-hyphenate">Edit Daily Log</h2>
 											</header>
 											<!-- Modal/Popup Box LWC body starts here -->
 											<div class="slds-modal__content slds-p-around_medium"
 												id="modal-content-id-2">
-
-												<lightning-record-edit-form object-api-name={objectApiName}
-													record-id={recordId}
-													onsuccess={editSuccess}
+												<lightning-record-edit-form record-id={recordID}
 													columns="1"
 													mode="edit"
-													field-names={fields}>
-												</lightning-record-edit-form>
+													onsuccess={handleSuccessEdit}
+													object-api-name={OBJECT_API_NAME}>
+													<lightning-input-field field-name='Task__c'>
+													</lightning-input-field>
 
+													<lightning-input-field field-name='Date__c'
+														value={selectedDate}></lightning-input-field>
+
+													<lightning-input-field field-name='Daily_Log_Hour__c'>
+													</lightning-input-field>
+
+													<lightning-input-field field-name='Daily_Log_Mins__c'>
+													</lightning-input-field>
+
+													<lightning-input-field field-name='Notes__c'>
+													</lightning-input-field>
+
+													<lightning-input-field field-name='Project__c'>
+													</lightning-input-field>
+
+													<lightning-input-field field-name='Employee__c'>
+													</lightning-input-field>
+
+													<div class="slds-m-top_medium">
+														<lightning-button class="slds-m-top_small"
+															label="Cancel"
+															onclick={closeModal}></lightning-button>
+														<lightning-button class="slds-m-top_small"
+															type="submit"
+															label="Save"></lightning-button>
+													</div>
+												</lightning-record-edit-form>
 											</div>
 										</div>
 									</template>
@@ -158,7 +203,6 @@
 							<!-- modal end -->
 						</div>
 					</div>
-
 					<div class="slds-col slds-size_1-of-8 slds-grid_vertical">
 						<div class="slds-grid slds-text-align_center">
 							<div class="slds-col slds-box slds-m-around_small weeks">

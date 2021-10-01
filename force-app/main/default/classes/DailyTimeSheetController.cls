@@ -1,6 +1,6 @@
 /**
  * @author            : Vrushabh Uprikar
- * @last modified on  : 30-09-2021
+ * @last modified on  : 01-10-2021
  * @last modified by  : Vrushabh Uprikar
  * Modifications Log
  * Ver   Date         Author             Modification
@@ -11,7 +11,7 @@ public with sharing class DailyTimeSheetController
    @AuraEnabled(cacheable = true)
    public static List<SObject> getAllDailyLogs(Integer year)
    {
-      List<SObject> dailyLogs = [SELECT Notes__c, Id, Name, Task__c, Date__c, Daily_Log__c, Project__c, Employee__c FROM Log_Hour__c Where CALENDAR_YEAR(Date__c) =:year];
+      List<SObject> dailyLogs = [SELECT Notes__c, Id, Name, Task__c, Daily_Log_Hour__c, Daily_Log_Mins__c , Date__c, Project__c, Employee__c FROM Log_Hour__c Where CALENDAR_YEAR(Date__c) =:year];
       System.debug('yearInt new: ' + dailyLogs);      
       return dailyLogs;
    }

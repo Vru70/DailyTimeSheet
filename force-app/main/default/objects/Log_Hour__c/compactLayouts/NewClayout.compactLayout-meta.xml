@@ -3,7 +3,7 @@
     <fullName>NewClayout</fullName>
     <fields>Name</fields>
     <fields>CreatedById</fields>
-    <fields>Daily_Log__c</fields>
+    <fields>Daily_Log_Hour__c</fields>
     <fields>Date__c</fields>
     <fields>LastModifiedById</fields>
     <fields>Task__c</fields>
