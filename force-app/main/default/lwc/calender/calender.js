@@ -1,6 +1,6 @@
 /**
  * @author            : Vrushabh Uprikar
- * @last modified on  : 30-09-2021
+ * @last modified on  : 01-10-2021
  * @last modified by  : Vrushabh Uprikar
  * Modifications Log
  * Ver   Date         Author             Modification
@@ -52,6 +52,7 @@ export default class Calender extends LightningElement {
         await getAllDailyLogs({ year: parseInt(year) }) // geting data from DailyTimeSheetController
             .then(data => {
                 this.dailyLogs = data;
+                console.log('this.dailyLogs:', this.dailyLogs);
             })
             .then(async _ => {
                 this.createDisplayMonthDates(totalNumberOfDays);
@@ -81,6 +82,8 @@ export default class Calender extends LightningElement {
                 date: this.formatedDate(new Date(this.currentYear, this.currentMonth - 1, noOfDaysInPreviousMonth)),
                 day: noOfDaysInPreviousMonth,
                 isDisable: true,
+                Daily_Log: 0,
+
             };
             noOfDaysInPreviousMonth--;
             previousMonthDaysArray.push(any);
@@ -88,11 +91,14 @@ export default class Calender extends LightningElement {
         this.dispMonthDates = [...previousMonthDaysArray.reverse()];
 
         for (let i = 1; i <= totalNumberOfDays; i++) {
+
             let any =
             {
                 date: this.formatedDate(new Date(this.currentYear, this.currentMonth, i)), //'' + this.currentYear + '-' + this.currentMonth + '-' + i,
                 day: i,
                 isDisable: false,
+                Daily_Log: 0,
+
             };
             this.dispMonthDates.push(any);
         }
@@ -100,11 +106,14 @@ export default class Calender extends LightningElement {
         let len = this.dispMonthDates.length;
 
         for (let i = 1; i <= (this.CALENDER_GRID_LENGTH - len); i++) {
+
             let any =
             {
                 date: this.formatedDate(new Date(this.currentYear, this.currentMonth + 1, i)),
                 day: i,
                 isDisable: false,
+                Daily_Log: 0,
+
             };
             this.dispMonthDates.push(any);
         }
@@ -112,19 +121,21 @@ export default class Calender extends LightningElement {
         this.dispMonthDates.map(date1 => {
 
             this.dailyLogs.forEach(date2 => {
-
-                if (date1.date == date2.Date__c) {
-                    date1.Daily_Log = date2.Daily_Log__c ? parseInt(date2.Daily_Log__c) : 0;
-                    date1.isToday = this.isToday(date1.date);
+                if (date1.date === date2.Date__c) {
                     date1.Id = date2.Id;
+                    date1.Notes = date2.Notes__c;
+                    date1.Name = date2.Name;
+                    date1.Task = date2.Task__c;
+                    date1.Daily_Log = date2.Daily_Log__c ? parseInt(date2.Daily_Log__c) : 0;
+                    date1.Project = date2.Project__c;
+                    date1.Employee = date2.Employee__c;
 
-                } else {
-                    date1.Daily_Log = 0;
-                    date1.isToday = this.isToday(date1.date);
-                    date1.Id = 'none';
                 }
-            });
+            })
+
         });
+
+        console.log('this.dispMonthDates:', JSON.stringify(this.dispMonthDates));
     }
 
     formatedDate(date) {
@@ -177,39 +188,33 @@ export default class Calender extends LightningElement {
         this.CURRUNET_MONTH_NAME = this.MONTH_NAME_LIST[this.currentMonth];
         let totalNumberOfDays = this.numberOfDaysInAMonth(this.currentYear, this.currentMonth + 1);
         this.setAllDailyLogs(this.currentYear, totalNumberOfDays);
+        console.log('this.currentYear:', this.currentYear);
     }
 
-    onClickOfDate(event)
-    {
+    onClickOfDate(event) {
         var onClickedDate = event.currentTarget.id.slice(0, 10);
         console.log('onClickedDate', onClickedDate);
         let objectData = this.checkDateIsAvailable(onClickedDate);
         console.log('objectData:', objectData);
-        if (objectData)
-        {
+        if (objectData) {
             this.setEditForm();
-        } else
-        {
+        } else {
             this.selectedDate = onClickedDate;
             this.setCreateForm();
         }
         this.openModal();
     }
 
-    checkDateIsAvailable(onClickedDate)
-    {
-        this.dailyLogs.forEach(key =>
-        {
-            if (key.Date__c == onClickedDate)
-            {
+    checkDateIsAvailable(onClickedDate) {
+        this.dailyLogs.forEach(key => {
+            if (key.Date__c == onClickedDate) {
                 this.recordID = key.Id;
-            } 
+            }
         });
 
-        if(this.recordID)
-        {
+        if (this.recordID) {
             return this.recordID;
-        }else{
+        } else {
             return false;
         }
     }
