@@ -1,6 +1,6 @@
 /**
  * @author            : Vrushabh Uprikar
- * @last modified on  : 01-10-2021
+ * @last modified on  : 04-10-2021
  * @last modified by  : Vrushabh Uprikar
  * Modifications Log
  * Ver   Date         Author             Modification
@@ -213,15 +213,18 @@ export default class Calender extends LightningElement {
 
     checkDateIsAvailable(onClickedDate)
     {
+        let flag = false;
         this.dailyLogs.forEach(key =>
         {
             if (key.Date__c == onClickedDate)
             {
                 this.recordID = key.Id;
+                flag = true;
+                console.log(' key.Id:',  key.Id);
             }
         });
 
-        if (this.recordID)
+        if (flag)
         {
             return this.recordID;
         } else {
@@ -251,27 +254,28 @@ export default class Calender extends LightningElement {
 
     handleCancel() {
         console.log('handling cancel now');
-        closeModel();
+        this.closeModal();
     }
 
     handleSubmit() {
         console.log('submitted:');
-        closeModel();
+        this.closeModal();
     }
 
     editSuccess() {
         console.log('editSuccess:');
-        closeModel();
+        this.closeModal();
     }
 
     handleSuccessNew(event) {
+        console.log('handleSuccessNew:', event.detail);
         const evt = new ShowToastEvent({
             title: "Record created",
             message: "Record ID: " + event.detail.id,
             variant: "success"
         });
         this.dispatchEvent(evt);
-        closeModel();
+        this.closeModal();
     }
 
     handleSuccessEdit(event) {
@@ -281,9 +285,14 @@ export default class Calender extends LightningElement {
             variant: "success"
         });
         this.dispatchEvent(evt);
-        closeModel();
+        this.closeModal();
     }
 }
 
 
-// tost and error handling lib
+// tost message
+// error lib
+// time addition logic
+// want suggestions for time field 1) piclist -> 2) text 
+
+// JQuery ka example 
