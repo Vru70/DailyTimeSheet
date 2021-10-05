@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>hour_should_not_greater_than_24</fullName>
-    <active>true</active>
+    <active>false</active>
     <errorConditionFormula>OR(NOT(Daily_Log_Hour__c &lt; 23 ),NOT(Daily_Log_Mins__c &lt; 59 ))</errorConditionFormula>
     <errorDisplayField>Daily_Log_Hour__c</errorDisplayField>
     <errorMessage>Time Should be less than 24Hour</errorMessage>
