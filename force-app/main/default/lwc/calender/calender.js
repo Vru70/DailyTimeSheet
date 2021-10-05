@@ -1,6 +1,6 @@
 /**
  * @author            : Vrushabh Uprikar
- * @last modified on  : 04-10-2021
+ * @last modified on  : 05-10-2021
  * @last modified by  : Vrushabh Uprikar
  * Modifications Log
  * Ver   Date         Author             Modification
@@ -8,14 +8,8 @@
 **/
 import { LightningElement, track } from 'lwc';
 import getAllDailyLogs from '@salesforce/apex/DailyTimeSheetController.getAllDailyLogs';
-import TASK_FIELD from '@salesforce/schema/Log_Hour__c.Task__c';
-import DATE_FIELD from '@salesforce/schema/Log_Hour__c.Date__c';
-import DAILY_LOGS_HOUR_FIELD from '@salesforce/schema/Log_Hour__c.Daily_Log_Hour__c';
-import DAILY_LOGS_MINS_FIELD from '@salesforce/schema/Log_Hour__c.Daily_Log_Mins__c';
-import NOTES_FIELD from '@salesforce/schema/Log_Hour__c.Notes__c';
-import PROJECT_FIELD from '@salesforce/schema/Log_Hour__c.Project__c';
-import EMPLOYEE_FIELD from '@salesforce/schema/Log_Hour__c.Employee__c';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+import { reduceErrors } from 'c/ldsUtils';
 
 export default class Calender extends LightningElement {
     @track todayDate;
@@ -30,13 +24,12 @@ export default class Calender extends LightningElement {
     @track isCreateFrom = false;
     @track recordID = '';
     @track selectedDate;
+    error;
 
     CALENDER_GRID_LENGTH = 42;
     CURRUNET_MONTH_NAME = '';
 
     OBJECT_API_NAME = 'Log_Hour__c';
-
-    fields = [TASK_FIELD, DATE_FIELD, DAILY_LOGS_HOUR_FIELD, DAILY_LOGS_MINS_FIELD, NOTES_FIELD, PROJECT_FIELD, EMPLOYEE_FIELD];
 
     MONTH_NAME_LIST = ["January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"];
@@ -62,7 +55,8 @@ export default class Calender extends LightningElement {
                 this.totalWorkingHrPerWeek();
             })
             .catch(error => {
-                console.log('error @ setAllDailyLogs : ', JSON.stringify(error));
+                this.error =  reduceErrors(error);
+                console.log('Error @ getAllDailyLogs:', this.error);
             });
     }
 
@@ -131,8 +125,8 @@ export default class Calender extends LightningElement {
                     date1.Notes = date2.Notes__c;
                     date1.Name = date2.Name;
                     date1.Task = date2.Task__c;
-                    date1.Daily_Log_Hr = date2.Daily_Log_Hour__c  ? parseInt(date2.Daily_Log_Hour__c ) : 0;
-                    date1.Daily_Log_Min = date2.Daily_Log_Mins__c  ? parseInt(date2.Daily_Log_Mins__c ) : 0;
+                    date1.Daily_Log_Hr = date2.Daily_Log_Hour__c  ? date2.Daily_Log_Hour__c  : 0;
+                    date1.Daily_Log_Min = date2.Daily_Log_Mins__c  ? date2.Daily_Log_Mins__c : 0;
                     date1.Project = date2.Project__c;
                     date1.Employee = date2.Employee__c;
 
@@ -169,23 +163,41 @@ export default class Calender extends LightningElement {
     totalWorkingHrPerWeek() {
         try {
             var count = 0;
-            var tmepArry = [];
-            for (let i = 0; i < 6; i++) {
-                var temp = 0;
-                for (let j = 0; j < 7; j++) {
-                    if (this.dispMonthDates[count].Daily_Log) {
-                        temp = temp + this.dispMonthDates[count].Daily_Log;
+            var tempArry = [];
+            for (let i = 0; i < 6; i++)
+            {
+                var hour = 0;
+                var mins = 0
+                for (let j = 0; j < 7; j++)
+                {
+                    if (this.dispMonthDates[count].Daily_Log_Hr || this.dispMonthDates[count].Daily_Log_Min)
+                    { 
+                        hour = hour + parseInt(this.dispMonthDates[count].Daily_Log_Hr);
+                        mins = mins + parseInt(this.dispMonthDates[count].Daily_Log_Min);
                     }
                     count++;
                 }
-                tmepArry[i] = temp;
-            }
-            this.totalHours = tmepArry;
-        }
-        catch (error) {
-            console.log('error @ totalWorkingHrPerWeek ', error);
 
+                tempArry[i] = this.timeConvert((hour*60)+mins);
+            }
+            this.totalHours = tempArry;
+            console.log('this.totalHours:'+ JSON.stringify(this.totalHours));
         }
+        catch (error)
+        {
+            this.error =  reduceErrors(error);
+            console.log('Error @ totalWorkingHrPerWeek:', this.error);
+        }
+    }
+
+    timeConvert(n)
+    {
+        var num = n;
+        var hours = (num / 60);
+        var rhours = Math.floor(hours);
+        var minutes = (hours - rhours) * 60;
+        var rminutes = Math.round(minutes);
+        return (rhours<10?"0":"")+rhours + ":"+(rminutes<10?"0":"") + rminutes;
     }
 
     setDateandCalDetails() {
@@ -243,32 +255,26 @@ export default class Calender extends LightningElement {
     }
 
     openModal() {
-        console.log('opening the model now');
         this.showModal = true;
     }
 
     closeModal() {
-        console.log('closing the model now');
         this.showModal = false;
     }
 
     handleCancel() {
-        console.log('handling cancel now');
         this.closeModal();
     }
 
     handleSubmit() {
-        console.log('submitted:');
         this.closeModal();
     }
 
     editSuccess() {
-        console.log('editSuccess:');
         this.closeModal();
     }
 
     handleSuccessNew(event) {
-        console.log('handleSuccessNew:', event.detail);
         const evt = new ShowToastEvent({
             title: "Record created",
             message: "Record ID: " + event.detail.id,
@@ -276,9 +282,12 @@ export default class Calender extends LightningElement {
         });
         this.dispatchEvent(evt);
         this.closeModal();
+        this.setDateandCalDetails();
+        this.clearDefValues();
     }
 
-    handleSuccessEdit(event) {
+    handleSuccessEdit(event)
+    {
         const evt = new ShowToastEvent({
             title: "Record Updated",
             message: "Record ID: " + event.detail.id,
@@ -286,13 +295,12 @@ export default class Calender extends LightningElement {
         });
         this.dispatchEvent(evt);
         this.closeModal();
+        this.setDateandCalDetails();
+        this.clearDefValues();
+    }
+
+    clearDefValues()
+    {
+        this.recordID='';
     }
 }
-
-
-// tost message
-// error lib
-// time addition logic
-// want suggestions for time field 1) piclist -> 2) text 
-
-// JQuery ka example 
