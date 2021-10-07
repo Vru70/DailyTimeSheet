@@ -1,6 +1,6 @@
 /**
  * @author            : Vrushabh Uprikar
- * @last modified on  : 05-10-2021
+ * @last modified on  : 07-10-2021
  * @last modified by  : Vrushabh Uprikar
  * Modifications Log
  * Ver   Date         Author             Modification
@@ -8,8 +8,10 @@
 **/
 import { LightningElement, track } from 'lwc';
 import getAllDailyLogs from '@salesforce/apex/DailyTimeSheetController.getAllDailyLogs';
+import getTaskListByDay from '@salesforce/apex/DailyTimeSheetController.getTaskListByDay';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { reduceErrors } from 'c/ldsUtils';
+
 
 export default class Calender extends LightningElement {
     @track todayDate;
@@ -26,6 +28,9 @@ export default class Calender extends LightningElement {
     @track selectedDate;
     error;
 
+    @track allData = []; // Task Data 
+    allDataOrgCopy = []; // DatatableOrignalCpy
+
     CALENDER_GRID_LENGTH = 42;
     CURRUNET_MONTH_NAME = '';
 
@@ -35,6 +40,13 @@ export default class Calender extends LightningElement {
         "July", "August", "September", "October", "November", "December"];
 
     WEEK_DAYS_LIST = ["Sun", "Mon", "Tues", "Wed", "Thu", "Fri", "Sat"];
+
+    
+    columns = [
+        { label: 'Task', fieldName: 'Name' },
+        { label: 'Date__c', fieldName: 'Date__c', type: 'date' },
+    ];
+
 
     connectedCallback() {
 
@@ -47,6 +59,7 @@ export default class Calender extends LightningElement {
         await getAllDailyLogs({ year: parseInt(year) }) // geting data from DailyTimeSheetController
             .then(data => {
                 this.dailyLogs = data;
+                
                 console.log('this.dailyLogs:', this.dailyLogs);
             })
             .then(async _ => {
@@ -132,7 +145,6 @@ export default class Calender extends LightningElement {
 
                 }
             })
-
         });
 
         console.log('this.dispMonthDates:', JSON.stringify(this.dispMonthDates));
@@ -209,18 +221,23 @@ export default class Calender extends LightningElement {
         console.log('this.currentYear:', this.currentYear);
     }
 
-    onClickOfDate(event) {
+    async onClickOfDate(event) {
         var onClickedDate = event.currentTarget.id.slice(0, 10);
         console.log('onClickedDate', onClickedDate);
-        let objectData = this.checkDateIsAvailable(onClickedDate);
-        console.log('objectData Record ID:', objectData);
-        if (objectData) {
-            this.setEditForm();
-        } else {
-            this.selectedDate = onClickedDate;
-            this.setCreateForm();
-        }
-        this.openModal();
+
+        await getTaskListByDay({ strDate: onClickedDate })
+            .then(data => {
+
+                this.allData = data;
+                console.log('this.allData:'+JSON.stringify(this.allData));
+            }).then(_ => {
+                this.openModal();
+            })
+            .catch(error => {
+                this.error = reduceErrors(error);
+                console.log('Error @ onClickOfDate:', this.error);
+            });
+
     }
 
     checkDateIsAvailable(onClickedDate)
