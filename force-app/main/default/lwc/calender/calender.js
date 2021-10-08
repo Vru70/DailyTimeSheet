@@ -44,7 +44,7 @@ export default class Calender extends LightningElement {
     
     columns = [
         { label: 'Task', fieldName: 'Name' },
-        { label: 'Date__c', fieldName: 'Date__c', type: 'date' },
+        { label: 'Date', fieldName: 'Date__c', type: 'date' },
     ];
 
 
