@@ -1,6 +1,6 @@
 /**
  * @author            : Vrushabh Uprikar
- * @last modified on  : 07-10-2021
+ * @last modified on  : 12-10-2021
  * @last modified by  : Vrushabh Uprikar
  * Modifications Log
  * Ver   Date         Author             Modification
@@ -11,9 +11,10 @@ import getAllDailyLogs from '@salesforce/apex/DailyTimeSheetController.getAllDai
 import getTaskListByDay from '@salesforce/apex/DailyTimeSheetController.getTaskListByDay';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { reduceErrors } from 'c/ldsUtils';
+import { NavigationMixin } from 'lightning/navigation';
 
 
-export default class Calender extends LightningElement {
+export default class Calender extends NavigationMixin(LightningElement) {
     @track todayDate;
     @track dateTrack;
     @track currentYear;
@@ -41,10 +42,23 @@ export default class Calender extends LightningElement {
 
     WEEK_DAYS_LIST = ["Sun", "Mon", "Tues", "Wed", "Thu", "Fri", "Sat"];
 
-    
     columns = [
-        { label: 'Task', fieldName: 'Name' },
+        { label: 'Name', fieldName: 'Name' },
+        { label: 'Task', fieldName: 'Task__r.Name' },
         { label: 'Date', fieldName: 'Date__c', type: 'date' },
+        { label: 'Log Hour', fieldName: 'Daily_Log_Hour__c' },
+        { label: 'Log Mins', fieldName: 'Daily_Log_Mins__c' },
+        {
+            label: 'Edit', type: 'button', typeAttributes:
+            {
+                label: 'Edit',
+                name: 'Edit',
+                title: 'Edit',
+                disabled: false,
+                value: 'edit',
+                iconPosition: 'left'
+            }
+        },
     ];
 
 
@@ -59,7 +73,7 @@ export default class Calender extends LightningElement {
         await getAllDailyLogs({ year: parseInt(year) }) // geting data from DailyTimeSheetController
             .then(data => {
                 this.dailyLogs = data;
-                
+
                 console.log('this.dailyLogs:', this.dailyLogs);
             })
             .then(async _ => {
@@ -68,7 +82,7 @@ export default class Calender extends LightningElement {
                 this.totalWorkingHrPerWeek();
             })
             .catch(error => {
-                this.error =  reduceErrors(error);
+                this.error = reduceErrors(error);
                 console.log('Error @ getAllDailyLogs:', this.error);
             });
     }
@@ -138,8 +152,8 @@ export default class Calender extends LightningElement {
                     date1.Notes = date2.Notes__c;
                     date1.Name = date2.Name;
                     date1.Task = date2.Task__c;
-                    date1.Daily_Log_Hr = date2.Daily_Log_Hour__c  ? date2.Daily_Log_Hour__c  : 0;
-                    date1.Daily_Log_Min = date2.Daily_Log_Mins__c  ? date2.Daily_Log_Mins__c : 0;
+                    date1.Daily_Log_Hr = date2.Daily_Log_Hour__c ? date2.Daily_Log_Hour__c : 0;
+                    date1.Daily_Log_Min = date2.Daily_Log_Mins__c ? date2.Daily_Log_Mins__c : 0;
                     date1.Project = date2.Project__c;
                     date1.Employee = date2.Employee__c;
 
@@ -176,40 +190,35 @@ export default class Calender extends LightningElement {
         try {
             var count = 0;
             var tempArry = [];
-            for (let i = 0; i < 6; i++)
-            {
+            for (let i = 0; i < 6; i++) {
                 var hour = 0;
                 var mins = 0
-                for (let j = 0; j < 7; j++)
-                {
-                    if (this.dispMonthDates[count].Daily_Log_Hr || this.dispMonthDates[count].Daily_Log_Min)
-                    { 
+                for (let j = 0; j < 7; j++) {
+                    if (this.dispMonthDates[count].Daily_Log_Hr || this.dispMonthDates[count].Daily_Log_Min) {
                         hour = hour + parseInt(this.dispMonthDates[count].Daily_Log_Hr);
                         mins = mins + parseInt(this.dispMonthDates[count].Daily_Log_Min);
                     }
                     count++;
                 }
 
-                tempArry[i] = this.timeConvert((hour*60)+mins);
+                tempArry[i] = this.timeConvert((hour * 60) + mins);
             }
             this.totalHours = tempArry;
-            console.log('this.totalHours:'+ JSON.stringify(this.totalHours));
+            console.log('this.totalHours:' + JSON.stringify(this.totalHours));
         }
-        catch (error)
-        {
-            this.error =  reduceErrors(error);
+        catch (error) {
+            this.error = reduceErrors(error);
             console.log('Error @ totalWorkingHrPerWeek:', this.error);
         }
     }
 
-    timeConvert(n)
-    {
+    timeConvert(n) {
         var num = n;
         var hours = (num / 60);
         var rhours = Math.floor(hours);
         var minutes = (hours - rhours) * 60;
         var rminutes = Math.round(minutes);
-        return (rhours<10?"0":"")+rhours + ":"+(rminutes<10?"0":"") + rminutes;
+        return (rhours < 10 ? "0" : "") + rhours + ":" + (rminutes < 10 ? "0" : "") + rminutes;
     }
 
     setDateandCalDetails() {
@@ -228,9 +237,15 @@ export default class Calender extends LightningElement {
         await getTaskListByDay({ strDate: onClickedDate })
             .then(data => {
 
-                this.allData = data;
-                console.log('this.allData:'+JSON.stringify(this.allData));
+                this.allData = data.map(record =>
+                    Object.assign(
+                        { "Task__r.Name": record.Task__r.Name }, record
+                    )
+                );
+
+                console.log('this.allData:' + JSON.stringify(this.allData));
             }).then(_ => {
+
                 this.openModal();
             })
             .catch(error => {
@@ -240,21 +255,17 @@ export default class Calender extends LightningElement {
 
     }
 
-    checkDateIsAvailable(onClickedDate)
-    {
+    checkDateIsAvailable(onClickedDate) {
         let flag = false;
-        this.dailyLogs.forEach(key =>
-        {
-            if (key.Date__c == onClickedDate)
-            {
+        this.dailyLogs.forEach(key => {
+            if (key.Date__c == onClickedDate) {
                 this.recordID = key.Id;
                 flag = true;
-                console.log(' key.Id:',  key.Id);
+                console.log(' key.Id:', key.Id);
             }
         });
 
-        if (flag)
-        {
+        if (flag) {
             return this.recordID;
         } else {
             return false;
@@ -303,8 +314,7 @@ export default class Calender extends LightningElement {
         this.clearDefValues();
     }
 
-    handleSuccessEdit(event)
-    {
+    handleSuccessEdit(event) {
         const evt = new ShowToastEvent({
             title: "Record Updated",
             message: "Record ID: " + event.detail.id,
@@ -316,8 +326,30 @@ export default class Calender extends LightningElement {
         this.clearDefValues();
     }
 
-    clearDefValues()
-    {
-        this.recordID='';
+    clearDefValues() {
+        this.recordID = '';
+    }
+
+    callRowAction(event) {
+        const recId = event.detail.row.Id;
+        console.log('recId:', recId);
+        const actionName = event.detail.action.name;
+        if (actionName === 'Edit') {
+            this[NavigationMixin.Navigate]({
+                type: 'standard__recordPage',
+                attributes: {
+                    recordId: recId,
+                    actionName: 'edit'
+                }
+            });
+
+        }
+
     }
 }
+
+
+// Employee Name should be Auto Number 
+// Employee Name and User name should be Same 
+// Remaove User Mapping with Employee(We can't create many users)
+// 
