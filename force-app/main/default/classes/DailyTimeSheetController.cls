@@ -1,6 +1,6 @@
 /**
  * @author            : Vrushabh Uprikar
- * @last modified on  : 07-10-2021
+ * @last modified on  : 12-10-2021
  * @last modified by  : Vrushabh Uprikar
  * Modifications Log
  * Ver   Date         Author             Modification
@@ -20,7 +20,7 @@ public with sharing class DailyTimeSheetController
    public static List<SObject> getTaskListByDay(String strDate)
    {
       Date selectedDate = date.valueOf(strDate);
-      List<SObject> tasklist = [SELECT Id, Name, Task__c, Daily_Log_Hour__c, Daily_Log_Mins__c , Date__c,Project__c, Employee__c FROM Log_Hour__c Where Date__c =:selectedDate Order By Daily_Log_Hour__c];
+      List<SObject> tasklist = [SELECT Id, Name, Task__r.Name, Daily_Log_Hour__c, Daily_Log_Mins__c , Date__c,Project__c, Employee__c FROM Log_Hour__c Where Date__c =:selectedDate Order By Daily_Log_Hour__c];
       System.debug('tasklist: ' + tasklist);      
       return tasklist;
    }
