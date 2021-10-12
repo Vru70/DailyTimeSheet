@@ -12,6 +12,7 @@ import getTaskListByDay from '@salesforce/apex/DailyTimeSheetController.getTaskL
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { reduceErrors } from 'c/ldsUtils';
 import { NavigationMixin } from 'lightning/navigation';
+import { encodeDefaultFieldValues } from 'lightning/pageReferenceUtils';
 
 
 export default class Calender extends NavigationMixin(LightningElement) {
@@ -233,6 +234,7 @@ export default class Calender extends NavigationMixin(LightningElement) {
     async onClickOfDate(event) {
         var onClickedDate = event.currentTarget.id.slice(0, 10);
         console.log('onClickedDate', onClickedDate);
+        this.selectedDate = onClickedDate;
 
         await getTaskListByDay({ strDate: onClickedDate })
             .then(data => {
@@ -345,6 +347,28 @@ export default class Calender extends NavigationMixin(LightningElement) {
 
         }
 
+    }
+
+    addRecord(event)
+    {
+        const defaultValues = encodeDefaultFieldValues({
+            Date__c : this.selectedDate,            
+        });
+
+        console.log('defaultValues : '+defaultValues);
+
+        this[NavigationMixin.Navigate]({
+            type: 'standard__objectPage',
+            attributes: {
+                objectApiName: this.OBJECT_API_NAME,
+                actionName: 'new'
+            },
+            state: {
+                defaultFieldValues: defaultValues
+            }
+        }).then(_ => {
+            this.selectedDate = '';
+        });
     }
 }
 

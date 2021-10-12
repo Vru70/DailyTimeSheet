@@ -36,7 +36,7 @@ h2 {
 
 .ml-calendar-demo {
     background: #00A1E0;
-    padding: 30px 10px;
+    padding: 60px 30px 30px 30px;
 }
 
 .calendar-row {
@@ -74,14 +74,14 @@ h2 {
 }
 
 .calendar-event {
-    height: 16px;
+    height: 19px;
     padding-top: 1px;
     padding: 1px 8px 0 8px;
-    font-size: .7rem;
+    font-size: .9rem;
     font-weight: 400;
     border-radius: 10px;
     background-color: #ececec;
-    color: #999;
+    color: rgb(0, 0, 0);
     display: inline-block;
     margin-top: 3px;
 }
