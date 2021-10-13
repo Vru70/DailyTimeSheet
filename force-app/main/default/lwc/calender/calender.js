@@ -375,5 +375,4 @@ export default class Calender extends NavigationMixin(LightningElement) {
 
 // Employee Name should be Auto Number 
 // Employee Name and User name should be Same 
-// Remaove User Mapping with Employee(We can't create many users)
-// 
+// Remaove User Mapping with Employee(We can't create many users) 
