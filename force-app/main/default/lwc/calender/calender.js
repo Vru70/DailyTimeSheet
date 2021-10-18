@@ -70,14 +70,13 @@ export default class Calender extends NavigationMixin(LightningElement) {
         this.setDateandCalDetails();
     }
 
-    async setAllDailyLogs(year, totalNumberOfDays) {
-        await getAllDailyLogs({ year: parseInt(year) }) // geting data from DailyTimeSheetController
+    setAllDailyLogs(year, totalNumberOfDays) {
+        getAllDailyLogs({ year: parseInt(year) }) // geting data from DailyTimeSheetController
             .then(data => {
                 this.dailyLogs = data;
-
                 console.log('this.dailyLogs:', this.dailyLogs);
             })
-            .then(async _ => {
+            .then(_ => {
                 this.createDisplayMonthDates(totalNumberOfDays);
             }).then(_temp => {
                 this.totalWorkingHrPerWeek();
@@ -109,7 +108,9 @@ export default class Calender extends NavigationMixin(LightningElement) {
                 Daily_Log_Hr: 0,
                 Daily_Log_Min: 0,
 
+
             };
+
             noOfDaysInPreviousMonth--;
             previousMonthDaysArray.push(any);
         }
@@ -125,7 +126,9 @@ export default class Calender extends NavigationMixin(LightningElement) {
                 Daily_Log_Hr: 0,
                 Daily_Log_Min: 0,
 
+
             };
+
             this.dispMonthDates.push(any);
         }
 
@@ -140,6 +143,7 @@ export default class Calender extends NavigationMixin(LightningElement) {
                 isDisable: false,
                 Daily_Log_Hr: 0,
                 Daily_Log_Min: 0,
+
 
             };
             this.dispMonthDates.push(any);
@@ -188,21 +192,19 @@ export default class Calender extends NavigationMixin(LightningElement) {
     }
 
     totalWorkingHrPerWeek() {
-        try{
-                var count = 0;
-                var tempArry = [];
-                for (let i = 0; i < 6; i++)
-                {
-                    var hour = 0;
-                    var mins = 0;
-                    for (let j = 0; j < 7; j++)
-                    {
-                        if (this.dispMonthDates[count].Daily_Log_Hr || this.dispMonthDates[count].Daily_Log_Min) {
-                            hour = hour + parseInt(this.dispMonthDates[count].Daily_Log_Hr);
-                            mins = mins + parseInt(this.dispMonthDates[count].Daily_Log_Min);
-                        }
-                        count++;
+        try {
+            var count = 0;
+            var tempArry = [];
+            for (let i = 0; i < 6; i++) {
+                var hour = 0;
+                var mins = 0;
+                for (let j = 0; j < 7; j++) {
+                    if (this.dispMonthDates[count].Daily_Log_Hr || this.dispMonthDates[count].Daily_Log_Min) {
+                        hour = hour + parseInt(this.dispMonthDates[count].Daily_Log_Hr);
+                        mins = mins + parseInt(this.dispMonthDates[count].Daily_Log_Min);
                     }
+                    count++;
+                }
 
                 tempArry[i] = this.timeConvert((hour * 60) + mins);
             }
@@ -233,8 +235,7 @@ export default class Calender extends NavigationMixin(LightningElement) {
         console.log('this.currentYear:', this.currentYear);
     }
 
-    async onClickOfDate(event) 
-    {
+    async onClickOfDate(event) {
         var onClickedDate = event.currentTarget.id.slice(0, 10);
         console.log('onClickedDate', onClickedDate);
         this.selectedDate = onClickedDate;
@@ -352,13 +353,12 @@ export default class Calender extends NavigationMixin(LightningElement) {
 
     }
 
-    addRecord(event)
-    {
+    addRecord(event) {
         const defaultValues = encodeDefaultFieldValues({
-            Date__c : this.selectedDate,            
+            Date__c: this.selectedDate,
         });
 
-        console.log('defaultValues : '+defaultValues);
+        console.log('defaultValues : ' + defaultValues);
 
         this[NavigationMixin.Navigate]({
             type: 'standard__objectPage',
@@ -375,9 +375,7 @@ export default class Calender extends NavigationMixin(LightningElement) {
     }
 }
 
-
 // Employee Name should be Auto Number 
 // Employee Name and User name should be Same 
 // Remaove User Mapping with Employee(We can't create many users) 
-
 // Map Task Project and Login Hr Project 
