@@ -38,26 +38,8 @@
             <value>Billable,Non Billable</value>
         </criteriaItems>
     </entryCriteria>
-    <finalApprovalActions>
-        <action>
-            <name>Approved_Daily_Logs</name>
-            <type>FieldUpdate</type>
-        </action>
-    </finalApprovalActions>
     <finalApprovalRecordLock>true</finalApprovalRecordLock>
-    <finalRejectionActions>
-        <action>
-            <name>Rejected_Daily_Logs</name>
-            <type>FieldUpdate</type>
-        </action>
-    </finalRejectionActions>
     <finalRejectionRecordLock>false</finalRejectionRecordLock>
-    <initialSubmissionActions>
-        <action>
-            <name>Approve_Daily_Logs</name>
-            <type>FieldUpdate</type>
-        </action>
-    </initialSubmissionActions>
     <label>Approve Daily Logs</label>
     <nextAutomatedApprover>
         <useApproverFieldOfRecordOwner>true</useApproverFieldOfRecordOwner>

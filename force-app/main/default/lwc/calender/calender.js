@@ -1,6 +1,6 @@
 /**
  * @author            : Vrushabh Uprikar
- * @last modified on  : 13-10-2021
+ * @last modified on  : 18-10-2021
  * @last modified by  : Vrushabh Uprikar
  * Modifications Log
  * Ver   Date         Author             Modification
@@ -45,7 +45,7 @@ export default class Calender extends NavigationMixin(LightningElement) {
 
     columns = [
         { label: 'Name', fieldName: 'Name' },
-        { label: 'Task', fieldName: 'Task__r.Name' },
+        { label: 'Task', fieldName: 'Daily_Task__r.Name' },
         { label: 'Date', fieldName: 'Date__c', type: 'date' },
         { label: 'Log Hour', fieldName: 'Daily_Log_Hour__c' },
         { label: 'Log Mins', fieldName: 'Daily_Log_Mins__c' },
@@ -188,19 +188,21 @@ export default class Calender extends NavigationMixin(LightningElement) {
     }
 
     totalWorkingHrPerWeek() {
-        try {
-            var count = 0;
-            var tempArry = [];
-            for (let i = 0; i < 6; i++) {
-                var hour = 0;
-                var mins = 0
-                for (let j = 0; j < 7; j++) {
-                    if (this.dispMonthDates[count].Daily_Log_Hr || this.dispMonthDates[count].Daily_Log_Min) {
-                        hour = hour + parseInt(this.dispMonthDates[count].Daily_Log_Hr);
-                        mins = mins + parseInt(this.dispMonthDates[count].Daily_Log_Min);
+        try{
+                var count = 0;
+                var tempArry = [];
+                for (let i = 0; i < 6; i++)
+                {
+                    var hour = 0;
+                    var mins = 0;
+                    for (let j = 0; j < 7; j++)
+                    {
+                        if (this.dispMonthDates[count].Daily_Log_Hr || this.dispMonthDates[count].Daily_Log_Min) {
+                            hour = hour + parseInt(this.dispMonthDates[count].Daily_Log_Hr);
+                            mins = mins + parseInt(this.dispMonthDates[count].Daily_Log_Min);
+                        }
+                        count++;
                     }
-                    count++;
-                }
 
                 tempArry[i] = this.timeConvert((hour * 60) + mins);
             }
@@ -231,7 +233,8 @@ export default class Calender extends NavigationMixin(LightningElement) {
         console.log('this.currentYear:', this.currentYear);
     }
 
-    async onClickOfDate(event) {
+    async onClickOfDate(event) 
+    {
         var onClickedDate = event.currentTarget.id.slice(0, 10);
         console.log('onClickedDate', onClickedDate);
         this.selectedDate = onClickedDate;
@@ -241,7 +244,7 @@ export default class Calender extends NavigationMixin(LightningElement) {
 
                 this.allData = data.map(record =>
                     Object.assign(
-                        { "Task__r.Name": record.Task__r.Name }, record
+                        { "Daily_Task__r.Name": record.Daily_Task__r.Name }, record
                     )
                 );
 

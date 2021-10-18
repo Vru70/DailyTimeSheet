@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>NewClayout</fullName>
+    <fields>Name</fields>
+    <fields>CreatedById</fields>
+    <fields>Daily_Log_Hour__c</fields>
+    <fields>Date__c</fields>
+    <fields>LastModifiedById</fields>
+    <fields>Daily_Task__c</fields>
+    <label>NewClayout</label>
+</CompactLayout>
