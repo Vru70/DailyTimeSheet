@@ -1,41 +1,29 @@
 /**
  * @author            : Vrushabh Uprikar
- * @last modified on  : 18-10-2021
+ * @last modified on  : 19-10-2021
  * @last modified by  : Vrushabh Uprikar
  * Modifications Log
  * Ver   Date         Author             Modification
  * 1.0   18-10-2021   Vrushabh Uprikar   Initial Version
 **/
-public with sharing class DailyTimeSheetApprovalTriggerHandler
-{
+public with sharing class DailyTimeSheetApprovalTriggerHandler {
     private boolean isTriggerExecuting = false;
     private integer BatchSize = 0;
     
-    public DailyTimeSheetApprovalTriggerHandler(boolean isExecuting, integer size)
-    {
+    public DailyTimeSheetApprovalTriggerHandler(boolean isExecuting, integer size) {
         isTriggerExecuting = isExecuting;
         BatchSize = size;
     }
 
-    public void onBeforeInsert(List<Log_Hour__c> newLogHrList)
-    {
-        system.debug('Log_Hour__c Trigger On Before Insert');
-    }
-
-    public void onAfterInsert(List<Log_Hour__c> newLogHrList)
-    {
+    public void onAfterInsert(List<Log_Hour__c> newLogHrList) {
         system.debug('Log_Hour__c Trigger On After Insert');
-        for(Log_Hour__c logHr : newLogHrList)
-        {
+        for(Log_Hour__c logHr : newLogHrList) {
             try
             {
-                if(logHr.Status__c == 'Submit')
-                {
+                if(logHr.Status__c == 'Submit') {
                     DailyTimeSheetLogApprovalController.submitForApproval(logHr);
                 }
-            } catch(Exception e)
-            {
-                throw new exception(e.getMessage());
+            } catch(Exception e) {
                 System.debug('onAfterInsert ' + e.getMessage());
             }
         }
@@ -50,7 +38,6 @@ public with sharing class DailyTimeSheetApprovalTriggerHandler
                     DailyTimeSheetLogApprovalController.submitForApproval(logHr);
                 }
             } catch(Exception e) {
-                throw new exception(e.getMessage());
                 System.debug('onAfterUpdate ' + e.getMessage());
             }
         }

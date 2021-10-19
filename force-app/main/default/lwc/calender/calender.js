@@ -1,6 +1,6 @@
 /**
  * @author            : Vrushabh Uprikar
- * @last modified on  : 18-10-2021
+ * @last modified on  : 19-10-2021
  * @last modified by  : Vrushabh Uprikar
  * Modifications Log
  * Ver   Date         Author             Modification
@@ -62,7 +62,6 @@ export default class Calender extends NavigationMixin(LightningElement) {
         },
     ];
 
-
     connectedCallback() {
 
         this.todayDate = new Date();
@@ -74,7 +73,7 @@ export default class Calender extends NavigationMixin(LightningElement) {
         getAllDailyLogs({ year: parseInt(year) }) // geting data from DailyTimeSheetController
             .then(data => {
                 this.dailyLogs = data;
-                console.log('this.dailyLogs:', this.dailyLogs);
+                console.log('this.dailyLogs:', JSON.stringify(this.dailyLogs));
             })
             .then(_ => {
                 this.createDisplayMonthDates(totalNumberOfDays);
@@ -107,8 +106,6 @@ export default class Calender extends NavigationMixin(LightningElement) {
                 isDisable: true,
                 Daily_Log_Hr: 0,
                 Daily_Log_Min: 0,
-
-
             };
 
             noOfDaysInPreviousMonth--;
@@ -125,8 +122,6 @@ export default class Calender extends NavigationMixin(LightningElement) {
                 isDisable: false,
                 Daily_Log_Hr: 0,
                 Daily_Log_Min: 0,
-
-
             };
 
             this.dispMonthDates.push(any);
@@ -143,8 +138,6 @@ export default class Calender extends NavigationMixin(LightningElement) {
                 isDisable: false,
                 Daily_Log_Hr: 0,
                 Daily_Log_Min: 0,
-
-
             };
             this.dispMonthDates.push(any);
         }
@@ -191,7 +184,9 @@ export default class Calender extends NavigationMixin(LightningElement) {
         return date == this.formatedDate(this.todayDate) ? true : false;
     }
 
-    totalWorkingHrPerWeek() {
+    async totalWorkingHrPerWeek()
+    {
+        
         try {
             var count = 0;
             var tempArry = [];
