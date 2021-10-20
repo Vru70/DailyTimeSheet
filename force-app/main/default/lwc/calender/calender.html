@@ -1,6 +1,6 @@
 <!--
 @author            : Vrushabh Uprikar
-@last modified on  : 13-10-2021
+@last modified on  : 20-10-2021
 @last modified by  : Vrushabh Uprikar
 Modifications Log
 Ver   Date         Author             Modification
@@ -86,10 +86,10 @@ Ver   Date         Author             Modification
 										onclick={onClickOfDate}>
 										<div class="calendar-day">
 											<span class="calendar-date">{date.day}</span><br />
-											<template if:true={date.Daily_Log_Hr}>
+											<template if:true={date.displayTime}>
 												<div>
 													<br /><span
-														class="calendar-event">{date.Daily_Log_Hr}:{date.Daily_Log_Min}</span>
+														class="calendar-event">{date.displayTime}</span>
 												</div>
 											</template>
 										</div>

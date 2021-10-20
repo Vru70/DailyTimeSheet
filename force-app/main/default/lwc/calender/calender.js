@@ -1,6 +1,6 @@
 /**
  * @author            : Vrushabh Uprikar
- * @last modified on  : 19-10-2021
+ * @last modified on  : 20-10-2021
  * @last modified by  : Vrushabh Uprikar
  * Modifications Log
  * Ver   Date         Author             Modification
@@ -72,7 +72,7 @@ export default class Calender extends NavigationMixin(LightningElement) {
     setAllDailyLogs(year, totalNumberOfDays) {
         getAllDailyLogs({ year: parseInt(year) }) // geting data from DailyTimeSheetController
             .then(data => {
-                this.dailyLogs = data;
+                this.dailyLogs = JSON.parse(JSON.stringify(data));
                 console.log('this.dailyLogs:', JSON.stringify(this.dailyLogs));
             })
             .then(_ => {
@@ -103,7 +103,6 @@ export default class Calender extends NavigationMixin(LightningElement) {
             {
                 date: this.formatedDate(new Date(this.currentYear, this.currentMonth - 1, noOfDaysInPreviousMonth)),
                 day: noOfDaysInPreviousMonth,
-                isDisable: true,
                 Daily_Log_Hr: 0,
                 Daily_Log_Min: 0,
             };
@@ -135,7 +134,6 @@ export default class Calender extends NavigationMixin(LightningElement) {
             {
                 date: this.formatedDate(new Date(this.currentYear, this.currentMonth + 1, i)),
                 day: i,
-                isDisable: false,
                 Daily_Log_Hr: 0,
                 Daily_Log_Min: 0,
             };
@@ -145,20 +143,38 @@ export default class Calender extends NavigationMixin(LightningElement) {
         this.dispMonthDates.map(date1 => {
 
             this.dailyLogs.forEach(date2 => {
-                if (date1.date === date2.Date__c) {
+                if (date1.date === date2.Date__c)
+                {
                     date1.Id = date2.Id;
-                    date1.Notes = date2.Notes__c;
-                    date1.Name = date2.Name;
-                    date1.Task = date2.Task__c;
                     date1.Daily_Log_Hr = date2.Daily_Log_Hour__c ? date2.Daily_Log_Hour__c : 0;
                     date1.Daily_Log_Min = date2.Daily_Log_Mins__c ? date2.Daily_Log_Mins__c : 0;
-                    date1.Project = date2.Project__c;
-                    date1.Employee = date2.Employee__c;
-
+                    date1.totalHr = 0;
+                    date1.totalMin = 0;
                 }
             })
         });
 
+
+        this.dispMonthDates.map(date1 =>
+        {
+
+            this.dailyLogs.forEach(date2 =>
+            {
+                if ((date1.date == date2.Date__c) && (date1.Id != date2.Id))
+                {
+                    date1.Id = date2.Id;
+                    date1.totalHr = parseInt(date1.totalHr)  + parseInt(date2.Daily_Log_Hour__c);
+                    date1.totalMin = parseInt(date1.totalMin) + parseInt(date2.Daily_Log_Mins__c);
+                    date1.displayTime = this.timeConvert((date1.totalHr * 60) + date1.totalMin);
+                }else if((date1.date == date2.Date__c) && (date1.Id == date2.Id))
+                {
+                    date1.Id = date2.Id;
+                    date1.totalHr = parseInt(date2.Daily_Log_Hour__c);
+                    date1.totalMin = parseInt(date2.Daily_Log_Mins__c);
+                    date1.displayTime = this.timeConvert((date1.totalHr * 60) + date1.totalMin);
+                }
+            })
+        });
         console.log('this.dispMonthDates:', JSON.stringify(this.dispMonthDates));
     }
 
@@ -194,9 +210,9 @@ export default class Calender extends NavigationMixin(LightningElement) {
                 var hour = 0;
                 var mins = 0;
                 for (let j = 0; j < 7; j++) {
-                    if (this.dispMonthDates[count].Daily_Log_Hr || this.dispMonthDates[count].Daily_Log_Min) {
-                        hour = hour + parseInt(this.dispMonthDates[count].Daily_Log_Hr);
-                        mins = mins + parseInt(this.dispMonthDates[count].Daily_Log_Min);
+                    if (this.dispMonthDates[count].totalHr || this.dispMonthDates[count].totalMin) {
+                        hour = hour + parseInt(this.dispMonthDates[count].totalHr);
+                        mins = mins + parseInt(this.dispMonthDates[count].totalMin);
                     }
                     count++;
                 }
