@@ -1,6 +1,6 @@
 /**
  * @author            : Vrushabh Uprikar
- * @last modified on  : 20-10-2021
+ * @last modified on  : 21-10-2021
  * @last modified by  : Vrushabh Uprikar
  * Modifications Log
  * Ver   Date         Author             Modification
@@ -62,8 +62,36 @@ export default class Calender extends NavigationMixin(LightningElement) {
         },
     ];
 
-    connectedCallback() {
+//////
 
+isManager = true;
+ManagerName = 'ANY'; // get Name Of Manager
+USER_Name = 'USER 1';
+userNameValue = 'User1';
+
+get userNameOption()
+{
+    return [
+        { label: 'User1', value: 'User1' },
+        { label: 'User2', value: 'User2' },
+        { label: 'User3', value: 'User3' },
+    ];
+}
+
+userNameChnageHandler(event)
+{
+    this.userNameValue = event.detail.value;
+}
+
+handleClickGo()
+{
+    // Sumit data
+}
+
+
+
+///
+    connectedCallback() {
         this.todayDate = new Date();
         this.dateTrack = this.todayDate;
         this.setDateandCalDetails();
@@ -143,8 +171,7 @@ export default class Calender extends NavigationMixin(LightningElement) {
         this.dispMonthDates.map(date1 => {
 
             this.dailyLogs.forEach(date2 => {
-                if (date1.date === date2.Date__c)
-                {
+                if (date1.date === date2.Date__c) {
                     date1.Id = date2.Id;
                     date1.Daily_Log_Hr = date2.Daily_Log_Hour__c ? date2.Daily_Log_Hour__c : 0;
                     date1.Daily_Log_Min = date2.Daily_Log_Mins__c ? date2.Daily_Log_Mins__c : 0;
@@ -154,20 +181,14 @@ export default class Calender extends NavigationMixin(LightningElement) {
             })
         });
 
-
-        this.dispMonthDates.map(date1 =>
-        {
-
-            this.dailyLogs.forEach(date2 =>
-            {
-                if ((date1.date == date2.Date__c) && (date1.Id != date2.Id))
-                {
+        this.dispMonthDates.map(date1 => {
+            this.dailyLogs.forEach(date2 => {
+                if ((date1.date == date2.Date__c) && (date1.Id != date2.Id)) {
                     date1.Id = date2.Id;
-                    date1.totalHr = parseInt(date1.totalHr)  + parseInt(date2.Daily_Log_Hour__c);
+                    date1.totalHr = parseInt(date1.totalHr) + parseInt(date2.Daily_Log_Hour__c);
                     date1.totalMin = parseInt(date1.totalMin) + parseInt(date2.Daily_Log_Mins__c);
                     date1.displayTime = this.timeConvert((date1.totalHr * 60) + date1.totalMin);
-                }else if((date1.date == date2.Date__c) && (date1.Id == date2.Id))
-                {
+                } else if ((date1.date == date2.Date__c) && (date1.Id == date2.Id)) {
                     date1.Id = date2.Id;
                     date1.totalHr = parseInt(date2.Daily_Log_Hour__c);
                     date1.totalMin = parseInt(date2.Daily_Log_Mins__c);
@@ -200,9 +221,7 @@ export default class Calender extends NavigationMixin(LightningElement) {
         return date == this.formatedDate(this.todayDate) ? true : false;
     }
 
-    async totalWorkingHrPerWeek()
-    {
-        
+    totalWorkingHrPerWeek() {
         try {
             var count = 0;
             var tempArry = [];
@@ -216,7 +235,6 @@ export default class Calender extends NavigationMixin(LightningElement) {
                     }
                     count++;
                 }
-
                 tempArry[i] = this.timeConvert((hour * 60) + mins);
             }
             this.totalHours = tempArry;

@@ -1,14 +1,45 @@
 <!--
 @author            : Vrushabh Uprikar
-@last modified on  : 20-10-2021
+@last modified on  : 21-10-2021
 @last modified by  : Vrushabh Uprikar
 Modifications Log
 Ver   Date         Author             Modification
 1.0   11-10-2021   Vrushabh Uprikar   Initial Version
 -->
 <template>
+
 	<!-- *************The below div is for the background and padding************ -->
 	<div class="ml-calendar-demo">
+
+		<template if:true={isManager}>
+			<lightning-card>
+				<div class="slds-grid slds-wrap">
+					<div class="slds-col slds-size_2-of-12">
+						<span>Manager</span>
+					</div>
+					<div class="slds-col slds-size_2-of-12 calendar-date">
+						<span>{ManagerName}</span>
+					</div>
+					<div class="slds-col slds-size_2-of-12">
+						<span><label for="user name">User Name</label></span>
+					</div>
+					<div class="slds-col slds-size_3-of-12">
+						<lightning-combobox name="user name"
+							value={userNameValue}
+							placeholder="Select User"
+							options={userNameOption}
+							onchange={userNameChnageHandler}></lightning-combobox>
+					</div>
+					<div class="slds-col slds-size_2-of-12">
+						<lightning-button variant="success"
+							label="Go"
+							title="Go"
+							onclick={handleClickGo}></lightning-button>
+					</div>
+				</div>
+			</lightning-card>
+		</template>
+
 		<lightning-card>
 			<div class="slds-grid slds-grid_vertical">
 				<div
@@ -57,17 +88,13 @@ Ver   Date         Author             Modification
 								</lightning-button-icon>
 							</div>
 						</div>
-
 					</div>
-
 				</div>
 			</div>
-
 			<div class="slds-col">
 				<div class="calendar-day day-name">
 					<div class="slds-grid slds-wrap ">
 						<div class="slds-col slds-size_7-of-8">
-
 							<div class="calendar-row">
 								<template for:each={WEEK_DAYS_LIST}
 									for:item="day">
@@ -77,7 +104,6 @@ Ver   Date         Author             Modification
 									</div>
 								</template>
 							</div>
-
 							<div class="each-month-grid slds-grid ">
 								<template for:each={dispMonthDates}
 									for:item="date">
@@ -88,12 +114,10 @@ Ver   Date         Author             Modification
 											<span class="calendar-date">{date.day}</span><br />
 											<template if:true={date.displayTime}>
 												<div>
-													<br /><span
-														class="calendar-event">{date.displayTime}</span>
+													<br /><span class="calendar-event">{date.displayTime}</span>
 												</div>
 											</template>
 										</div>
-
 									</div>
 								</template>
 								<!-- modal start -->
@@ -145,35 +169,28 @@ Ver   Date         Author             Modification
 														class="slds-p-horizontal_x-small"
 														onclick={closeModal}>
 													</lightning-button>
-
 												</div>
 											</footer>
 										</div>
 									</section>
 									<div class="slds-backdrop slds-backdrop_open">
-
 									</div>
-
 								</template>
 								<!-- modal end -->
-
 							</div>
 						</div>
-
 						<div class="slds-col slds-size_1-of-8">
-
 							<div class="calendar-row">
 								<div class="calendar-day day-name">
 									<span class="Weekname">Total Hour</span>
 								</div>
 							</div>
-
 							<div class="each-month-total slds-grid ">
 								<template for:each={totalHours}
 									for:item="con">
 									<div key={con}>
 										<div class="calendar-day">
-											<span class="calendar-date">{con} </span><br />
+											<span class="calendar-date">{con}</span><br />
 										</div>
 									</div>
 								</template>
@@ -182,8 +199,6 @@ Ver   Date         Author             Modification
 					</div>
 				</div>
 			</div>
-
-
 		</lightning-card>
 	</div>
 </template>
