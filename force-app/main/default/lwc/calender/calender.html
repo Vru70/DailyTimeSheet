@@ -1,6 +1,6 @@
 <!--
 @author            : Vrushabh Uprikar
-@last modified on  : 21-10-2021
+@last modified on  : 23-10-2021
 @last modified by  : Vrushabh Uprikar
 Modifications Log
 Ver   Date         Author             Modification
@@ -14,191 +14,195 @@ Ver   Date         Author             Modification
 		<template if:true={isManager}>
 			<lightning-card>
 				<div class="slds-grid slds-wrap">
-					<div class="slds-col slds-size_2-of-12">
+					<div class="slds-col slds-size_1-of-12">
+
+					</div>
+					<div class="slds-col slds-size_1-of-12">
 						<span>Manager</span>
 					</div>
-					<div class="slds-col slds-size_2-of-12 calendar-date">
-						<span>{ManagerName}</span>
+					<div class="slds-col slds-size_1-of-12 calendar-date">
+						<span>{userManagerName}</span>
 					</div>
+
 					<div class="slds-col slds-size_2-of-12">
-						<span><label for="user name">User Name</label></span>
+						<lightning-button-icon variant="base"
+							size="medium"
+							icon-name="utility:record_update"
+							alternative-text="opne"></lightning-button-icon>
 					</div>
-					<div class="slds-col slds-size_3-of-12">
+
+					<div class="slds-col slds-size_2-of-12">
 						<lightning-combobox name="user name"
-							value={userNameValue}
+							value={userComboBoxNameValue}
 							placeholder="Select User"
-							options={userNameOption}
+							options={userNameOptionList}
 							onchange={userNameChnageHandler}></lightning-combobox>
-					</div>
-					<div class="slds-col slds-size_2-of-12">
-						<lightning-button variant="success"
-							label="Go"
-							title="Go"
-							onclick={handleClickGo}></lightning-button>
 					</div>
 				</div>
 			</lightning-card>
 		</template>
 
-		<lightning-card>
-			<div class="slds-grid slds-grid_vertical">
-				<div
-					class="slds-col slds-grid slds-grid_vertical-align-center slds-wrap calendar-header slds-p-left_x-small">
-					<div class="slds-col slds-size_1-of-8">
-						<span>
-							<h2 class="slds-p-left_x-large"><strong>{CURRUNET_MONTH_NAME}</strong></h2>
-						</span>
-					</div>
-					<div class="slds-col slds-size_1-of-8">
-						<span>
-							<h2 class="slds-p-left_x-large slds-float_right">{currentYear}</h2>
-						</span>
-					</div>
-					<div class="slds-col slds-size_1-of-8">
-
-					</div>
-					<div class="slds-col slds-size_1-of-8">
-
-					</div>
-					<div class="slds-col slds-size_1-of-8">
-
-					</div>
-					<div class="slds-col slds-size_1-of-8">
-
-					</div>
-					<div class="slds-col slds-size_1-of-8">
-
-					</div>
-					<div class="slds-col slds-size_1-of-8">
-
-						<div class="slds-grid">
-							<div class="slds-col">
-								<lightning-button-icon icon-name="utility:chevronleft"
-									alternative-text="Pre"
-									title="Previous"
-									onclick={handleClickPrevious}>
-								</lightning-button-icon>
-							</div>
-
-							<div class="slds-col">
-								<lightning-button-icon icon-name="utility:chevronright"
-									alternative-text="Next"
-									title="Next"
-									onclick={handleClickNext}>
-								</lightning-button-icon>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="slds-col">
-				<div class="calendar-day day-name">
-					<div class="slds-grid slds-wrap ">
-						<div class="slds-col slds-size_7-of-8">
-							<div class="calendar-row">
-								<template for:each={WEEK_DAYS_LIST}
-									for:item="day">
-									<div key={day}
-										class="calendar-day day-name">
-										<span class="Weekname">{day}</span>
-									</div>
-								</template>
-							</div>
-							<div class="each-month-grid slds-grid ">
-								<template for:each={dispMonthDates}
-									for:item="date">
-									<div key={date}
-										id={date.date}
-										onclick={onClickOfDate}>
-										<div class="calendar-day">
-											<span class="calendar-date">{date.day}</span><br />
-											<template if:true={date.displayTime}>
-												<div>
-													<br /><span class="calendar-event">{date.displayTime}</span>
-												</div>
-											</template>
-										</div>
-									</div>
-								</template>
-								<!-- modal start -->
-								<template if:true={showModal}>
-									<section role="dialog"
-										tabindex="-1"
-										aria-labelledby="modal-heading-01"
-										aria-modal="true"
-										aria-describedby="modal-content-id-1"
-										class="slds-modal slds-fade-in-open">
-										<div class="slds-modal__container">
-											<header class="slds-modal__header slds-p-around_x-small">
-												<button
-													class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
-													title="Close"
-													onclick={closeModal}>
-													<lightning-icon icon-name="utility:close"
-														alternative-text="close"
-														class="blackColor"
-														size="small"></lightning-icon>
-												</button>
-												<h2 class="slds-text-heading_medium slds-hyphenate">Daily Log Record
-													Detail
-												</h2>
-											</header>
-
-											<div class="slds-modal__content slds-p-around_medium">
-												<lightning-datatable key-field="Id"
-													data={allData}
-													columns={columns}
-													hide-checkbox-column
-													draft-values={draftValues}
-													onsave={handleSave}
-													onrowaction={callRowAction}>
-												</lightning-datatable>
-											</div>
-											<footer class="slds-modal__footer slds-p-around_x-small">
-												<div>
-													<lightning-button variant="brand"
-														label="Add"
-														title="Add"
-														class="slds-p-horizontal_x-small"
-														onclick={addRecord}>
-													</lightning-button>
-
-													<lightning-button variant="brand"
-														label="Close"
-														title="Close"
-														class="slds-p-horizontal_x-small"
-														onclick={closeModal}>
-													</lightning-button>
-												</div>
-											</footer>
-										</div>
-									</section>
-									<div class="slds-backdrop slds-backdrop_open">
-									</div>
-								</template>
-								<!-- modal end -->
-							</div>
+		<template if:true={showCalender}>
+			<lightning-card class="slds-m-bottom_none">
+				<div class="slds-grid slds-grid_vertical">
+					<div
+						class="slds-col slds-grid slds-grid_vertical-align-center slds-wrap calendar-header slds-p-left_x-small">
+						<div class="slds-col slds-size_1-of-8">
+							<span>
+								<h2 class="slds-p-left_x-large"><strong>{CURRUNET_MONTH_NAME}</strong></h2>
+							</span>
 						</div>
 						<div class="slds-col slds-size_1-of-8">
-							<div class="calendar-row">
-								<div class="calendar-day day-name">
-									<span class="Weekname">Total Hour</span>
+							<span>
+								<h2 class="slds-p-left_x-large slds-float_right">{currentYear}</h2>
+							</span>
+						</div>
+						<div class="slds-col slds-size_1-of-8">
+
+						</div>
+						<div class="slds-col slds-size_1-of-8">
+
+						</div>
+						<div class="slds-col slds-size_1-of-8">
+
+						</div>
+						<div class="slds-col slds-size_1-of-8">
+
+						</div>
+						<div class="slds-col slds-size_1-of-8">
+
+						</div>
+						<div class="slds-col slds-size_1-of-8">
+
+							<div class="slds-grid">
+								<div class="slds-col">
+									<lightning-button-icon icon-name="utility:chevronleft"
+										alternative-text="Pre"
+										title="Previous"
+										onclick={handleClickPrevious}>
+									</lightning-button-icon>
 								</div>
-							</div>
-							<div class="each-month-total slds-grid ">
-								<template for:each={totalHours}
-									for:item="con">
-									<div key={con}>
-										<div class="calendar-day">
-											<span class="calendar-date">{con}</span><br />
-										</div>
-									</div>
-								</template>
+
+								<div class="slds-col">
+									<lightning-button-icon icon-name="utility:chevronright"
+										alternative-text="Next"
+										title="Next"
+										onclick={handleClickNext}>
+									</lightning-button-icon>
+								</div>
 							</div>
 						</div>
 					</div>
 				</div>
-			</div>
-		</lightning-card>
+				<div class="slds-col">
+					<div class="calendar-day day-name">
+						<div class="slds-grid slds-wrap ">
+							<div class="slds-col slds-size_7-of-8">
+								<div class="calendar-row">
+									<template for:each={WEEK_DAYS_LIST}
+										for:item="day">
+										<div key={day}
+											class="calendar-day day-name">
+											<span class="Weekname">{day}</span>
+										</div>
+									</template>
+								</div>
+								<div class="each-month-grid slds-grid ">
+									<template for:each={dispMonthDates}
+										for:item="date">
+										<div key={date}
+											id={date.date}
+											onclick={onClickOfDate}>
+											<div class="calendar-day">
+												<span class="calendar-date">{date.day}</span><br />
+												<template if:true={date.displayTime}>
+													<div>
+														<br /><span class="calendar-event">{date.displayTime}</span>
+													</div>
+												</template>
+											</div>
+										</div>
+									</template>
+									<!-- modal start -->
+									<template if:true={showModal}>
+										<section role="dialog"
+											tabindex="-1"
+											aria-labelledby="modal-heading-01"
+											aria-modal="true"
+											aria-describedby="modal-content-id-1"
+											class="slds-modal slds-fade-in-open">
+											<div class="slds-modal__container">
+												<header class="slds-modal__header slds-p-around_x-small">
+													<button
+														class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+														title="Close"
+														onclick={closeModal}>
+														<lightning-icon icon-name="utility:close"
+															alternative-text="close"
+															class="blackColor"
+															size="small"></lightning-icon>
+													</button>
+													<h2 class="slds-text-heading_medium slds-hyphenate">Daily Log Record
+														Detail
+													</h2>
+												</header>
+
+												<div class="slds-modal__content slds-p-around_medium">
+													<lightning-datatable key-field="Id"
+														data={allData}
+														columns={columns}
+														hide-checkbox-column
+														draft-values={draftValues}
+														onsave={handleSave}
+														onrowaction={callRowAction}>
+													</lightning-datatable>
+												</div>
+												<footer class="slds-modal__footer slds-p-around_x-small">
+													<div>
+														<lightning-button variant="brand"
+															label="Add"
+															title="Add"
+															class="slds-p-horizontal_x-small"
+															onclick={addRecord}>
+														</lightning-button>
+
+														<lightning-button variant="brand"
+															label="Close"
+															title="Close"
+															class="slds-p-horizontal_x-small"
+															onclick={closeModal}>
+														</lightning-button>
+													</div>
+												</footer>
+											</div>
+										</section>
+										<div class="slds-backdrop slds-backdrop_open">
+										</div>
+									</template>
+									<!-- modal end -->
+								</div>
+							</div>
+							<div class="slds-col slds-size_1-of-8">
+								<div class="calendar-row">
+									<div class="calendar-day day-name">
+										<span class="Weekname">Total Hour</span>
+									</div>
+								</div>
+								<div class="each-month-total slds-grid ">
+									<template for:each={totalHours}
+										for:item="con">
+										<div key={con}>
+											<div class="calendar-day">
+												<span class="calendar-date">{con}</span><br />
+											</div>
+										</div>
+									</template>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</lightning-card>
+		</template>
 	</div>
 </template>

@@ -35,7 +35,6 @@ h2 {
 }
 
 .ml-calendar-demo {
-    background: #00A1E0;
     padding: 30px 30px 30px 10px;
 }
 
@@ -78,7 +77,7 @@ h2 {
     padding-top: 1px;
     padding: 1px 8px 0 8px;
     font-size: .9rem;
-    font-weight: 400;
+    font-weight: 300;
     border-radius: 10px;
     background-color: #ececec;
     color: rgb(0, 0, 0);
@@ -99,13 +98,6 @@ h2 {
     position: relative;
 }
 
-/* .verticalAlign
-{
-    padding: 70px 0;
-    border: 3px solid green;
-    text-align: center;
-} */
-
 .calendar-day {
     width: 100%;
     padding: .5rem;
@@ -116,8 +108,8 @@ h2 {
 }
 
 .calendar-date {
-    font-weight: 600;
-    font-size: 1.25rem;
+    /* font-weight: 600; */
+    font-size: 1.10rem;
 }
 
 .calendar-date:hover {

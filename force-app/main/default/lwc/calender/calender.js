@@ -1,21 +1,27 @@
 /**
  * @author            : Vrushabh Uprikar
- * @last modified on  : 21-10-2021
+ * @last modified on  : 23-10-2021
  * @last modified by  : Vrushabh Uprikar
  * Modifications Log
  * Ver   Date         Author             Modification
  * 1.0   21-09-2021   Vrushabh Uprikar   Initial Version
 **/
-import { LightningElement, track } from 'lwc';
+import { LightningElement, track, wire } from 'lwc';
 import getAllDailyLogs from '@salesforce/apex/DailyTimeSheetController.getAllDailyLogs';
-import getTaskListByDay from '@salesforce/apex/DailyTimeSheetController.getTaskListByDay';
+import getTaskListByDay from '@salesforce/apex/DailyTimeSheetController.getTaskListByDay'; //
+import getUserNameUnderManager from '@salesforce/apex/DailyTimeSheetController.getUserNameUnderManager';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { reduceErrors } from 'c/ldsUtils';
 import { NavigationMixin } from 'lightning/navigation';
 import { encodeDefaultFieldValues } from 'lightning/pageReferenceUtils';
-
+import USER_ID from '@salesforce/user/Id';
+import USER_NAME from '@salesforce/schema/User.Name';
+import USER_ROLE_NAME from '@salesforce/schema/User.UserRole.Name';
+import USER_MANAGER_ID from '@salesforce/schema/User.Manager.Name';
+import { getRecord } from 'lightning/uiRecordApi';
 
 export default class Calender extends NavigationMixin(LightningElement) {
+    @track showCalender = false;
     @track todayDate;
     @track dateTrack;
     @track currentYear;
@@ -28,8 +34,8 @@ export default class Calender extends NavigationMixin(LightningElement) {
     @track isCreateFrom = false;
     @track recordID = '';
     @track selectedDate;
+    @track userNameOption = [];
     error;
-
     @track allData = []; // Task Data 
     allDataOrgCopy = []; // DatatableOrignalCpy
 
@@ -62,43 +68,26 @@ export default class Calender extends NavigationMixin(LightningElement) {
         },
     ];
 
-//////
+    // Manager Portal
+    @track isManager = false;
+    @track userManagerName;
+    loggedUserName;
+    loggedUserRoleName;
+    loggedUserId = USER_ID;
+    loggedUserManagerId;
 
-isManager = true;
-ManagerName = 'ANY'; // get Name Of Manager
-USER_Name = 'USER 1';
-userNameValue = 'User1';
+    @track userIdTogetdata;
 
-get userNameOption()
-{
-    return [
-        { label: 'User1', value: 'User1' },
-        { label: 'User2', value: 'User2' },
-        { label: 'User3', value: 'User3' },
-    ];
-}
+    @track userComboBoxNameValue = 'None';
 
-userNameChnageHandler(event)
-{
-    this.userNameValue = event.detail.value;
-}
-
-handleClickGo()
-{
-    // Sumit data
-}
-
-
-
-///
     connectedCallback() {
         this.todayDate = new Date();
         this.dateTrack = this.todayDate;
         this.setDateandCalDetails();
     }
 
-    setAllDailyLogs(year, totalNumberOfDays) {
-        getAllDailyLogs({ year: parseInt(year) }) // geting data from DailyTimeSheetController
+    setAllDailyLogs(year, totalNumberOfDays, Id) {
+        getAllDailyLogs({ year: parseInt(year), id: Id }) // geting data from DailyTimeSheetController
             .then(data => {
                 this.dailyLogs = JSON.parse(JSON.stringify(data));
                 console.log('this.dailyLogs:', JSON.stringify(this.dailyLogs));
@@ -260,7 +249,7 @@ handleClickGo()
         this.currentYear = this.dateTrack.getFullYear();
         this.CURRUNET_MONTH_NAME = this.MONTH_NAME_LIST[this.currentMonth];
         let totalNumberOfDays = this.numberOfDaysInAMonth(this.currentYear, this.currentMonth + 1);
-        this.setAllDailyLogs(this.currentYear, totalNumberOfDays);
+        this.setAllDailyLogs(this.currentYear, totalNumberOfDays, this.userIdTogetdata);
         console.log('this.currentYear:', this.currentYear);
     }
 
@@ -269,7 +258,7 @@ handleClickGo()
         console.log('onClickedDate', onClickedDate);
         this.selectedDate = onClickedDate;
 
-        await getTaskListByDay({ strDate: onClickedDate })
+        await getTaskListByDay({ strDate: onClickedDate, id: this.userIdTogetdata })
             .then(data => {
 
                 this.allData = data.map(record =>
@@ -377,9 +366,7 @@ handleClickGo()
                     actionName: 'edit'
                 }
             });
-
         }
-
     }
 
     addRecord(event) {
@@ -402,6 +389,76 @@ handleClickGo()
             this.selectedDate = '';
         });
     }
+
+    // Manager Portal
+
+    get userNameOptionList() {
+        return this.userNameOption;
+    }
+
+    userNameChnageHandler(event) {
+        var value = event.detail.value;
+        this.userComboBoxNameValue = value;
+        console.log('value:', value);
+        if (value == 'None') {
+            this.showCalender = false;
+        } else {
+            this.showCalender = true;
+
+            this.getUserLoginDataById(value);
+        }
+
+    }
+
+    getUserLoginDataById(Id) {
+        console.log('getUserLoginDataById :', Id);
+        this.userIdTogetdata = Id;
+        this.setDateandCalDetails();
+    }
+
+    getUserNameUnderManager(loggedUserId) {
+        getUserNameUnderManager({ Id: loggedUserId })
+            .then(data => {
+                var options = [];
+                options.unshift({ label: 'Select User', value: 'None' });
+                data.forEach(any => {
+                    options.push({ label: any.Name, value: any.Id });
+                });
+                this.userNameOption = JSON.parse(JSON.stringify(options));
+                console.log('data @ this.userNameOption:', this.userNameOption);
+            }).catch(error => {
+                this.error = reduceErrors(error);
+                console.log('Error @ getUserNameUnderManager:', this.error);
+            });
+    }
+
+    isProjectmanager() {
+        if (this.loggedUserRoleName == 'Project Manager') {
+            this.isManager = true;
+            this.getUserNameUnderManager(this.loggedUserId);
+        } else {
+            this.isManager = false;
+            this.showCalender = true;
+            this.userIdTogetdata = this.loggedUserId;
+        }
+    }
+
+    @wire(getRecord, { recordId: USER_ID, fields: [USER_NAME, USER_ROLE_NAME, USER_MANAGER_ID] })
+    wireuser({ error, data }) {
+        if (error) {
+            this.error = reduceErrors(error);
+            console.log('error @ wireuser:', this.error);
+        } else if (data) {
+            console.log('data @ wireuser:', JSON.stringify(data));
+            this.userManagerName = data.fields.Manager.displayValue == null ? 'None' : data.fields.Manager.displayValue;
+            this.loggedUserManagerId = data.fields.Manager.value == null ? 'None' : data.fields.Manager.value.id;
+            this.loggedUserName = data.fields.Name.value;
+            this.loggedUserRoleName = data.fields.UserRole.displayValue == null ? 'None' : data.fields.UserRole.value.fields.Name.value;
+            console.log('this.loggedUserRoleName', this.loggedUserRoleName);
+            this.isProjectmanager();
+        }
+    }
+
 }
 
 // Employee Name should be Auto Number 
