@@ -55,6 +55,7 @@ export default class Calender extends NavigationMixin(LightningElement) {
         { label: 'Date', fieldName: 'Date__c', type: 'date' },
         { label: 'Log Hour', fieldName: 'Daily_Log_Hour__c' },
         { label: 'Log Mins', fieldName: 'Daily_Log_Mins__c' },
+        { label: 'CreatedBy', fieldName: 'CreatedBy.Name' },
         {
             label: 'Edit', type: 'button', typeAttributes:
             {
@@ -260,13 +261,19 @@ export default class Calender extends NavigationMixin(LightningElement) {
 
         await getTaskListByDay({ strDate: onClickedDate, id: this.userIdTogetdata })
             .then(data => {
-
-                this.allData = data.map(record =>
+                var any = data.map(record =>
                     Object.assign(
                         { "Daily_Task__r.Name": record.Daily_Task__r.Name }, record
                     )
                 );
 
+                any = data.map(record =>
+                    Object.assign(
+                        { "CreatedBy.Name": record.CreatedBy.Name }, record
+                    )
+                );
+
+                this.allData = any;
                 console.log('this.allData:' + JSON.stringify(this.allData));
             }).then(_ => {
 
@@ -425,7 +432,7 @@ export default class Calender extends NavigationMixin(LightningElement) {
                     options.push({ label: any.Name, value: any.Id });
                 });
                 this.userNameOption = JSON.parse(JSON.stringify(options));
-                console.log('data @ this.userNameOption:', this.userNameOption);
+                console.log('data @ this.userNameOption:', JSON.stringify(this.userNameOption));
             }).catch(error => {
                 this.error = reduceErrors(error);
                 console.log('Error @ getUserNameUnderManager:', this.error);
