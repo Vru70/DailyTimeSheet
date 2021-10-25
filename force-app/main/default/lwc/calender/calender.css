@@ -1,7 +1,7 @@
 /*********************************Start here****************************************/
 
 
-/* The Custom CSS start from here  */
+/* The Custom CSS start from here      font-weight: bolder; */
 
 .blackColor {
     --lwc-colorTextIconDefault: rgb(0, 0, 0);
@@ -109,6 +109,11 @@ h2 {
 
 .calendar-date {
     /* font-weight: 600; */
+    font-size: 1.10rem;
+}
+
+.total-log-hr {
+    font-weight: 600;
     font-size: 1.10rem;
 }
 

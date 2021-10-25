@@ -1,6 +1,6 @@
 /**
  * @author            : Vrushabh Uprikar
- * @last modified on  : 23-10-2021
+ * @last modified on  : 25-10-2021
  * @last modified by  : Vrushabh Uprikar
  * Modifications Log
  * Ver   Date         Author             Modification
@@ -261,22 +261,14 @@ export default class Calender extends NavigationMixin(LightningElement) {
 
         await getTaskListByDay({ strDate: onClickedDate, id: this.userIdTogetdata })
             .then(data => {
-                var any = data.map(record =>
-                    Object.assign(
-                        { "Daily_Task__r.Name": record.Daily_Task__r.Name }, record
-                    )
-                );
+                data.map(record => {
+                    record["Daily_Task__r.Name"] = record.Daily_Task__r.Name;
+                    record["CreatedBy.Name"] = record.CreatedBy.Name;
+                });
 
-                any = data.map(record =>
-                    Object.assign(
-                        { "CreatedBy.Name": record.CreatedBy.Name }, record
-                    )
-                );
-
-                this.allData = any;
-                console.log('this.allData:' + JSON.stringify(this.allData));
+                this.allData = data;
             }).then(_ => {
-
+                console.log('this.allData:' + JSON.stringify(this.allData));
                 this.openModal();
             })
             .catch(error => {
@@ -403,7 +395,9 @@ export default class Calender extends NavigationMixin(LightningElement) {
         return this.userNameOption;
     }
 
-    userNameChnageHandler(event) {
+    userNameChnageHandler(event)
+    {
+        this.totalHours = [];
         var value = event.detail.value;
         this.userComboBoxNameValue = value;
         console.log('value:', value);

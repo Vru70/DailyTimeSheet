@@ -1,6 +1,6 @@
 <!--
 @author            : Vrushabh Uprikar
-@last modified on  : 23-10-2021
+@last modified on  : 25-10-2021
 @last modified by  : Vrushabh Uprikar
 Modifications Log
 Ver   Date         Author             Modification
@@ -12,38 +12,39 @@ Ver   Date         Author             Modification
 	<div class="ml-calendar-demo">
 
 		<template if:true={isManager}>
-			<lightning-card>
-				<div class="slds-grid slds-wrap">
+			<div class="slds-card">
+				<div class="slds-grid slds-wrap slds-p-around_x-small slds-grid_vertical-align-center">
 					<div class="slds-col slds-size_1-of-12">
 
 					</div>
 					<div class="slds-col slds-size_1-of-12">
-						<span>Manager</span>
+						<span></span>
 					</div>
 					<div class="slds-col slds-size_1-of-12 calendar-date">
-						<span>{userManagerName}</span>
+						<span></span>
 					</div>
 
 					<div class="slds-col slds-size_2-of-12">
-						<lightning-button-icon variant="base"
+						<!-- <lightning-button-icon variant="base"
 							size="medium"
 							icon-name="utility:record_update"
-							alternative-text="opne"></lightning-button-icon>
+							alternative-text="opne"></lightning-button-icon> -->
 					</div>
 
 					<div class="slds-col slds-size_2-of-12">
 						<lightning-combobox name="user name"
+						label="Select User"
 							value={userComboBoxNameValue}
 							placeholder="Select User"
 							options={userNameOptionList}
 							onchange={userNameChnageHandler}></lightning-combobox>
 					</div>
 				</div>
-			</lightning-card>
+			</div>
 		</template>
 
 		<template if:true={showCalender}>
-			<lightning-card class="slds-m-bottom_none">
+			<div class="slds-card slds-m-bottom_none">
 				<div class="slds-grid slds-grid_vertical">
 					<div
 						class="slds-col slds-grid slds-grid_vertical-align-center slds-wrap calendar-header slds-p-left_x-small">
@@ -193,7 +194,7 @@ Ver   Date         Author             Modification
 										for:item="con">
 										<div key={con}>
 											<div class="calendar-day">
-												<span class="calendar-date">{con}</span><br />
+												<span class="total-log-hr">{con} Hours</span><br />
 											</div>
 										</div>
 									</template>
@@ -202,7 +203,7 @@ Ver   Date         Author             Modification
 						</div>
 					</div>
 				</div>
-			</lightning-card>
+			</div>
 		</template>
 	</div>
 </template>
