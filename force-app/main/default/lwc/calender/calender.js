@@ -1,6 +1,6 @@
 /**
  * @author            : Vrushabh Uprikar
- * @last modified on  : 25-10-2021
+ * @last modified on  : 26-10-2021
  * @last modified by  : Vrushabh Uprikar
  * Modifications Log
  * Ver   Date         Author             Modification
@@ -57,8 +57,11 @@ export default class Calender extends NavigationMixin(LightningElement) {
         { label: 'Log Mins', fieldName: 'Daily_Log_Mins__c' },
         { label: 'CreatedBy', fieldName: 'CreatedBy.Name' },
         {
-            label: 'Edit', type: 'button', typeAttributes:
+            label: 'Edit', type: 'button-icon', typeAttributes:
             {
+                iconName: 'utility:edit',
+                variant: 'border-filled',
+                alternativeText: 'Edit Record',
                 label: 'Edit',
                 name: 'Edit',
                 title: 'Edit',
