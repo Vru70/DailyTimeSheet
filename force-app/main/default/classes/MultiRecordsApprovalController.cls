@@ -1,6 +1,6 @@
 /**
  * @author            : Vrushabh Uprikar
- * @last modified on  : 26-10-2021
+ * @last modified on  : 27-10-2021
  * @last modified by  : Vrushabh Uprikar
  * Modifications Log
  * Ver   Date         Author             Modification
@@ -37,16 +37,18 @@ public class MultiRecordsApprovalController {
     }
 
     @AuraEnabled
-    public static List<SubmittedRecordsWrapper> getSubmittedRecords(Integer queryLimit, Integer queryOffset){
+    public static List<SubmittedRecordsWrapper> getSubmittedRecords(Integer queryLimit, Integer queryOffset)
+    {
         system.debug('queryLimit '+queryLimit);
         system.debug('queryOffset '+queryOffset);
         List<SubmittedRecordsWrapper> lstSubmissionWrapper = new List<SubmittedRecordsWrapper>();
         //Process instance stores the info of records submitted for approval,
         // Process instance work item are the records an approver sees while approving/rejecting, Process instance step stores approved/rejected record including approva;/rejection comments
-        for(ProcessInstance ps : [SELECT Id,TargetObjectId,TargetObject.Name,CreatedDate,
-                                 (SELECT ID FROM WorkItems WHERE OriginalActorId = : UserInfo.getUserId()),
-                                 (SELECT OriginalActor.Name,Comments FROM Steps WHERE StepStatus = 'Started') FROM ProcessInstance
-                                 ORDER BY CreatedDate DESC LIMIT :queryLimit OFFSET :queryOffset])
+        List<ProcessInstance> processInstaList = [SELECT Id,TargetObjectId,TargetObject.Name,CreatedDate,
+        (SELECT ID FROM WorkItems WHERE OriginalActorId = : UserInfo.getUserId()),
+        (SELECT OriginalActor.Name,Comments FROM Steps WHERE StepStatus = 'Started') FROM ProcessInstance WHERE TargetObject.Type ='Log_Hour__c'
+        ORDER BY CreatedDate DESC LIMIT :queryLimit OFFSET :queryOffset];
+        for(ProcessInstance ps : processInstaList )
                                  {
             if(!ps.WorkItems.isEmpty()){
                 SubmittedRecordsWrapper objSubmittedRecordsWrapper = new SubmittedRecordsWrapper();

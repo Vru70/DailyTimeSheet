@@ -1,6 +1,6 @@
 /**
  * @author            : Vrushabh Uprikar
- * @last modified on  : 26-10-2021
+ * @last modified on  : 27-10-2021
  * @last modified by  : Vrushabh Uprikar
  * Modifications Log
  * Ver   Date         Author             Modification
@@ -469,3 +469,6 @@ export default class Calender extends NavigationMixin(LightningElement) {
 // Employee Name and User name should be Same 
 // Remaove User Mapping with Employee(We can't create many users) 
 // Map Task Project and Login Hr Project 
+
+//1 PEnding      Approved    Rejected     Export-> XML or PDF
+// Proper Trigger Email after submition adn Status update using Trigger or Other Process
