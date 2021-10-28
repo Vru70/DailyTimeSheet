@@ -1,6 +1,6 @@
 /**
  * @author            : Vrushabh Uprikar
- * @last modified on  : 26-10-2021
+ * @last modified on  : 28-10-2021
  * @last modified by  : Vrushabh Uprikar
  * Modifications Log
  * Ver   Date         Author             Modification
@@ -9,7 +9,7 @@
 import { LightningElement, wire, track , api } from 'lwc';
 import getWrapperClassList from '@salesforce/apex/MultiRecordsApprovalController.getSubmittedRecords';
 import processRecords from '@salesforce/apex/MultiRecordsApprovalController.processRecords';
-import gettotalcount from '@salesforce/apex/MultiRecordsApprovalController.gettotalcount';
+import gettotalcount from '@salesforce/apex/MultiRecordsApprovalController.getTotalPendingApproval';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { refreshApex } from '@salesforce/apex';
 
