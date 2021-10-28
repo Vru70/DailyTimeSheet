@@ -1,6 +1,6 @@
 /**
  * @author            : Vrushabh Uprikar
- * @last modified on  : 27-10-2021
+ * @last modified on  : 28-10-2021
  * @last modified by  : Vrushabh Uprikar
  * Modifications Log
  * Ver   Date         Author             Modification
@@ -398,8 +398,7 @@ export default class Calender extends NavigationMixin(LightningElement) {
         return this.userNameOption;
     }
 
-    userNameChnageHandler(event)
-    {
+    userNameChnageHandler(event) {
         this.totalHours = [];
         var value = event.detail.value;
         this.userComboBoxNameValue = value;
@@ -408,7 +407,6 @@ export default class Calender extends NavigationMixin(LightningElement) {
             this.showCalender = false;
         } else {
             this.showCalender = true;
-
             this.getUserLoginDataById(value);
         }
 
@@ -472,3 +470,4 @@ export default class Calender extends NavigationMixin(LightningElement) {
 
 //1 PEnding      Approved    Rejected     Export-> XML or PDF
 // Proper Trigger Email after submition adn Status update using Trigger or Other Process
+// aslo end user can see submitted , approve and rejected record list

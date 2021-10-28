@@ -9,24 +9,40 @@ Ver   Date         Author             Modification
 <template>
 	<div class="slds-card">
 		<lightning-tabset variant="vertical">
-
 			<lightning-tab label="Calendar">
-				<!-- isManager CoboBox -->
+				<div style="height:45rem">
+					<!-- isManager CoboBox -->
 					<template if:true={isManager}>
-						<div class="slds-card">
-								<lightning-combobox
-								label="Select User"
-								class="slds-m-left_xx-small"
-								value={userComboBoxNameValue}
-								placeholder="Select User"
-								options={userNameOptionList}
-								onchange={userNameChnageHandler}
-							>
-							</lightning-combobox>
+						<div class="slds-card slds-grid slds-wrap slds-grid_vertical-align-center">
+							<div class="slds-col slds-size_1-of-12">
+
+							</div>
+							<div class="slds-col slds-size_2-of-12">
+								<span>Select User</span>
+							</div>
+							<div class="slds-col slds-size_3-of-12">
+								<lightning-combobox class="slds-m-left_xx-small"
+									value={userComboBoxNameValue}
+									placeholder="Select User"
+									options={userNameOptionList}
+									onchange={userNameChnageHandler}>
+								</lightning-combobox>
+							</div>
+							<div class="slds-col slds-size_1-of-12">
+
+							</div>
+							<div class="slds-col slds-size_1-of-12">
+
+							</div>
+							<div class="slds-col slds-size_2-of-12">
+
+							</div>
+							<div class="slds-col slds-size_2-of-12">
+
+							</div>
 						</div>
 					</template>
-				<!-- Calendar Component START -->
-				<div>
+					<!-- Calendar Component START -->
 					<template if:true={showCalender}>
 						<div class="slds-m-bottom_none">
 							<div class="slds-grid slds-grid_vertical">
