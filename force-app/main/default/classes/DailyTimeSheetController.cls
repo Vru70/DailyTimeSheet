@@ -1,6 +1,6 @@
 /**
  * @author            : Vrushabh Uprikar
- * @last modified on  : 28-10-2021
+ * @last modified on  : 29-10-2021
  * @last modified by  : Vrushabh Uprikar
  * Modifications Log
  * Ver   Date         Author             Modification
@@ -8,6 +8,18 @@
 **/
 public with sharing class DailyTimeSheetController 
 {
+
+    public static void submitForApproval(Log_Hour__c logHr) {
+        
+        Approval.ProcessSubmitRequest req = new Approval.ProcessSubmitRequest();          
+        req.setComments('Submitting request for approval using Trigger');        
+        req.setObjectId(logHr.id);      
+        req.setProcessDefinitionNameOrId('Approve_Daily_Logs');      
+        Approval.ProcessResult result = Approval.process(req);  
+        System.debug('result '+result);
+        System.assert(result.isSuccess());
+    }
+
    @AuraEnabled(cacheable = true)
    public static List<SObject> getAllDailyLogs(Integer year, String id ) {
       try {

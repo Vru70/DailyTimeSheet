@@ -1,6 +1,6 @@
 /**
  * @author            : Vrushabh Uprikar
- * @last modified on  : 28-10-2021
+ * @last modified on  : 29-10-2021
  * @last modified by  : Vrushabh Uprikar
  * Modifications Log
  * Ver   Date         Author             Modification
@@ -92,7 +92,6 @@ export default class Calender extends NavigationMixin(LightningElement) {
 
     @api wrapperList = [];
     @api draftValues = [];
-    @track error;
     @track sortBy;
     @track sortDirection;
     @track bShowModal = false;
@@ -189,7 +188,6 @@ export default class Calender extends NavigationMixin(LightningElement) {
             editable: true
         }
     ];
-
 
     connectedCallback() {
         this.todayDate = new Date();
@@ -884,6 +882,7 @@ export default class Calender extends NavigationMixin(LightningElement) {
         this.wrapperList = parseData;
         this.showLoadingSpinner = false;
     }
+
     openConfirmationModal() {
         this.bShowModal = true;
     }
@@ -930,31 +929,17 @@ export default class Calender extends NavigationMixin(LightningElement) {
             if (event.target.label === 'Approve') {
                 console.log('Event -> ' + event.target.label);
                 this.originalMessage = event.target.label;
-                this.isDialogVisible = true;
+                this.processrec();
             }
             else if (event.target.label === 'Reject') {
                 console.log('Event -> ' + event.target.label);
                 this.originalMessage = event.target.label;
-                this.isDialogVisible = true;
-            }
-            else if (event.target.name === 'confirmModal') {
-                console.log(event.detail);
-                //when user clicks outside of the dialog area, the event is dispatched with detail value  as 1
-                if (event.detail !== 1) {
-                    console.log('status' + event.detail.status);
-                    if (event.detail.status === 'confirm') {
-                        this.processrec();
-                        this.isDialogVisible = false;
-                    } else if (event.detail.status === 'cancel') {
-                        //do something else
-                        this.isDialogVisible = false;
-                    }
-                }
-
+                this.processrec();
             }
         }
-        catch (e) {
-            console.log(e);
+        catch (error) {
+            this.error = reduceErrors(error);
+            console.log('Errpor @ processrec ' + this.error);
         }
     }
 

@@ -1,6 +1,6 @@
 /**
  * @author            : Vrushabh Uprikar
- * @last modified on  : 19-10-2021
+ * @last modified on  : 29-10-2021
  * @last modified by  : Vrushabh Uprikar
  * Modifications Log
  * Ver   Date         Author             Modification
@@ -20,8 +20,8 @@ public with sharing class DailyTimeSheetApprovalTriggerHandler {
         for(Log_Hour__c logHr : newLogHrList) {
             try
             {
-                if(logHr.Status__c == 'Submit') {
-                    DailyTimeSheetLogApprovalController.submitForApproval(logHr);
+                if(logHr.Status__c == 'Submited') {
+                    DailyTimeSheetController.submitForApproval(logHr);
                 }
             } catch(Exception e) {
                 System.debug('onAfterInsert ' + e.getMessage());
@@ -34,8 +34,8 @@ public with sharing class DailyTimeSheetApprovalTriggerHandler {
         for(Log_Hour__c logHr : newLogHrList) {
             Log_Hour__c logHrOld = oldLogHrListMap.get(logHr.Id);
             try {
-                if( logHr.Status__c == 'Submit' && logHrOld.Status__c != 'Submit') {
-                    DailyTimeSheetLogApprovalController.submitForApproval(logHr);
+                if( logHr.Status__c == 'Submited' && logHrOld.Status__c != 'Submited') {
+                    DailyTimeSheetController.submitForApproval(logHr);
                 }
             } catch(Exception e) {
                 System.debug('onAfterUpdate ' + e.getMessage());
