@@ -1,6 +1,6 @@
 /**
  * @author            : Vrushabh Uprikar
- * @last modified on  : 29-10-2021
+ * @last modified on  : 01-11-2021
  * @last modified by  : Vrushabh Uprikar
  * Modifications Log
  * Ver   Date         Author             Modification
@@ -142,18 +142,28 @@ export default class Calender extends NavigationMixin(LightningElement) {
             }
         },
         {
-            label: 'Item Name',
-            fieldName: 'recordName',
+            label: 'Name',
+            fieldName: 'Name',
             type: 'text',
-            initialWidth: 200,
             wrapText: true,
             sortable: true
         },
         {
-            label: 'Related to',
-            fieldName: 'relatedTo',
+            label: 'Daily Task',
+            fieldName: 'Daily_Task',
             type: 'text',
-            initialWidth: 100,
+            sortable: true
+        },
+        {
+            label: 'Log Hour',
+            fieldName: 'Daily_Log_Hour',
+            type: 'text',
+            sortable: true
+        },
+        {
+            label: 'Log Mins',
+            fieldName: 'Daily_Log_Mins',
+            type: 'text',
             sortable: true
         },
         {
@@ -161,22 +171,6 @@ export default class Calender extends NavigationMixin(LightningElement) {
             fieldName: 'submittedBy',
             type: 'text',
             initialWidth: 120,
-            sortable: true
-        },
-        {
-            label: 'Submitted on',
-            fieldName: 'submittedDate',
-            type: 'date',
-            initialWidth: 120,
-            typeAttributes: {
-                day: 'numeric',
-                month: 'short',
-                year: 'numeric'
-                //hour: '2-digit',
-                //minute: '2-digit',
-                //second: '2-digit',
-                //hour12: true
-            },
             sortable: true
         },
         {
@@ -193,7 +187,18 @@ export default class Calender extends NavigationMixin(LightningElement) {
         this.todayDate = new Date();
         this.dateTrack = this.todayDate;
         this.setDateandCalDetails();
+        this.title = 'Your Pending Approvals';
+        this.showinfiniteLoadingSpinner = true;
+        this.wrapperList = [];
+        this.queryOffset = 0;
+        this.queryLimit = 5;
+        this.loadRecords();
     }
+
+    constructor() {
+        super();
+    }
+
 
     setAllDailyLogs(year, totalNumberOfDays, Id) {
         getAllDailyLogs({ year: parseInt(year), id: Id }) // geting data from DailyTimeSheetController
@@ -591,16 +596,6 @@ export default class Calender extends NavigationMixin(LightningElement) {
         }
     }
 
-    constructor() {
-        super();
-        this.title = 'Your Pending Approvals';
-        this.showinfiniteLoadingSpinner = true;
-        this.wrapperList = [];
-        this.queryOffset = 0;
-        this.queryLimit = 5;
-        this.loadRecords();
-    }
-
     reloadrecords() {
         this.showLoadingSpinner = true;
         this.showinfiniteLoadingSpinner = true;
@@ -611,7 +606,7 @@ export default class Calender extends NavigationMixin(LightningElement) {
         console.log(this.totalRecordCount);
         return getWrapperClassList({ queryLimit: this.queryLimit, queryOffset: this.queryOffset })
             .then(result => {
-                console.log(result);
+                console.log('getWrapperClassList ' + result);
                 console.log(this.totalRecordCount);
                 flatData = result;
                 if (flatData != undefined) {
@@ -647,7 +642,7 @@ export default class Calender extends NavigationMixin(LightningElement) {
         console.log('loadRecords queryLimit' + this.queryLimit);
         return getWrapperClassList({ queryLimit: this.queryLimit, queryOffset: this.queryOffset })
             .then(result => {
-                console.log(result);
+                console.log('getWrapperClassList ' + JSON.stringify(result));
                 flatData = result;
                 if (flatData != undefined) {
                     for (var i = 0; i < flatData.length; i++) {
@@ -657,7 +652,7 @@ export default class Calender extends NavigationMixin(LightningElement) {
                     this.wrapperList = updatedRecords;
                 }
                 this.showLoadingSpinner = false;
-                console.log(this.wrapperList);
+                console.log('this.wrapperList ' + this.wrapperList);
                 refreshApex(this.wiredcountResults);
                 this.title = 'Your Pending Approvals (' + this.totalRecordCount + ')';
             }).catch(error => {
@@ -773,7 +768,7 @@ export default class Calender extends NavigationMixin(LightningElement) {
         this.showLoadingSpinner = true;
         var el = this.template.querySelector('lightning-datatable');
         var selectedrows = el.getSelectedRows();
-        console.log(selectedrows);
+        console.log('selectedrows' + selectedrows);
         // console.log(event.target.label);
         var varprocessType = this.originalMessage;// event.target.label;
         var processrows = [];
@@ -816,21 +811,21 @@ export default class Calender extends NavigationMixin(LightningElement) {
                             }
                             this.dispatchEvent(
                                 new ShowToastEvent({
-                                    title: messagetitle,
-                                    message: error,
+                                    title: varprocessType,
+                                    message: messagetitle,
                                     variant: ivariant
                                 })
                             );
                             return refreshApex(this.wiredcountResults);
                         }).catch(error => {
-                            console.log(error);
                             this.showLoadingSpinner = false;
-                            this.error = error;
+                            this.error = reduceErrors(error);
+                            console.log('return getWrapperClassList' + error);
                             this.dispatchEvent(
                                 new ShowToastEvent({
                                     title: 'Error',
                                     message: error,
-                                    variant: 'info'
+                                    variant: 'error'
                                 })
                             );
                             return refreshApex(this.wiredcountResults);
@@ -838,10 +833,11 @@ export default class Calender extends NavigationMixin(LightningElement) {
                 })
                 .catch(error => {
                     this.showLoadingSpinner = false;
+                    this.error = reduceErrors(error);
                     this.dispatchEvent(
                         new ShowToastEvent({
                             title: 'Error',
-                            message: error,
+                            message: this.error,
                             variant: 'error'
                         })
                     );
@@ -921,7 +917,6 @@ export default class Calender extends NavigationMixin(LightningElement) {
         this.record = row;
         console.log(this.record.recordId);
         window.open(this.record.recordId, '_blank');
-
     }
 
     handleconformClick(event) {
@@ -944,12 +939,3 @@ export default class Calender extends NavigationMixin(LightningElement) {
     }
 
 }
-
-// Employee Name should be Auto Number 
-// Employee Name and User name should be Same 
-// Remaove User Mapping with Employee(We can't create many users) 
-// Map Task Project and Login Hr Project 
-
-//1 PEnding      Approved    Rejected     Export-> XML or PDF
-// Proper Trigger Email after submition adn Status update using Trigger or Other Process
-// aslo end user can see submitted , approve and rejected record list

@@ -1,6 +1,6 @@
 /**
  * @author            : Vrushabh Uprikar
- * @last modified on  : 29-10-2021
+ * @last modified on  : 01-11-2021
  * @last modified by  : Vrushabh Uprikar
  * Modifications Log
  * Ver   Date         Author             Modification
@@ -54,81 +54,133 @@ public with sharing class DailyTimeSheetController
       }
    }
 
-   //Wrapper class to store the column values of data table
-   public class SubmittedRecordsWrapper{
-      @AuraEnabled public Id workItemId;
-      @AuraEnabled public String recordId;
-      @AuraEnabled public String relatedTo;
-      @AuraEnabled public String recordName;
-      @AuraEnabled public String submittedBy;
-      @AuraEnabled public String submittercomment;
-      @AuraEnabled public Date submittedDate;
-      @AuraEnabled public String comments;
-  }
+   public class ProcessInstanceWrapper
+   {
+        @AuraEnabled public Id workItemId;
+        @AuraEnabled public String recordId;
+        @AuraEnabled public String submittedBy;
+        @AuraEnabled public String submittercomment;
+        @AuraEnabled public Date submittedDate;
+        @AuraEnabled public String comments;
+    }
+
+    public class ApprovalWrapper
+    {
+        @AuraEnabled public Id workItemId;
+        @AuraEnabled public String recordId;
+        @AuraEnabled public String submittedBy;
+        @AuraEnabled public String submittercomment;
+        @AuraEnabled public Date submittedDate;
+        @AuraEnabled public String comments;
+        @AuraEnabled public String Name;
+        @AuraEnabled public Integer Daily_Log_Hour;
+        @AuraEnabled public Integer Daily_Log_Mins;
+        @AuraEnabled public String Daily_Task;
+    }
 
   @AuraEnabled (cacheable=true)
   public static integer getTotalPendingApproval()
   {
-      Integer icount = 0;
+      Integer pendingApprovalsCount = 0;
       List<ProcessInstance> processInstaList = [SELECT Id, TargetObjectId, TargetObject.Name, CreatedDate, (SELECT ID FROM WorkItems WHERE OriginalActorId = : UserInfo.getUserId()) FROM ProcessInstance WHERE TargetObject.Type ='Log_Hour__c'];
-      for(ProcessInstance ps : processInstaList )
+      for(ProcessInstance porcessInstance : processInstaList )
       {
-          if(!ps.WorkItems.isEmpty())
+          if(!porcessInstance.WorkItems.isEmpty())
           {
-              icount++; // counting Submited Pending Approvals
+            pendingApprovalsCount++; // counting Submited Pending Approvals
           }
       }
-      System.debug('icount: ' + icount);
-      return icount;
+      System.debug('pendingApprovalsCount: ' + pendingApprovalsCount);
+      return pendingApprovalsCount;
   }
 
+
+
   @AuraEnabled
-  public static List<SubmittedRecordsWrapper> getSubmittedRecords(Integer queryLimit, Integer queryOffset)
+  public static List<ApprovalWrapper> getSubmittedRecords(Integer queryLimit, Integer queryOffset)
   {
-      system.debug('queryLimit '+queryLimit);
-      system.debug('queryOffset '+queryOffset);
-      List<SubmittedRecordsWrapper> lstSubmissionWrapper = new List<SubmittedRecordsWrapper>();
-      //Process instance stores the info of records submitted for approval,
-      // Process instance work item are the records an approver sees while approving/rejecting, Process instance step stores approved/rejected record including approva;/rejection comments
-      List<ProcessInstance> processInstaList = [SELECT Id,TargetObjectId,TargetObject.Name,CreatedDate,
-      (SELECT ID FROM WorkItems WHERE OriginalActorId = : UserInfo.getUserId()),
-      (SELECT OriginalActor.Name,Comments FROM Steps WHERE StepStatus = 'Started') FROM ProcessInstance WHERE TargetObject.Type ='Log_Hour__c'
+    List<ProcessInstanceWrapper> listProcessInstanceWrapper = new List<ProcessInstanceWrapper>();
+    List<ApprovalWrapper> listApprovalWrapper = new  List<ApprovalWrapper>();
+    List<Id> targetObjIdList = new List<Id>();
+
+    system.debug('queryLimit '+queryLimit + ' queryOffset '+queryOffset);
+
+    List<ProcessInstance> processInstaList = [SELECT Id,TargetObjectId,
+      (SELECT ID FROM WorkItems WHERE OriginalActorId = :UserInfo.getUserId()),
+      (SELECT OriginalActor.Name,Comments FROM Steps WHERE StepStatus = 'Started') 
+      FROM ProcessInstance WHERE TargetObject.Type ='Log_Hour__c'
       ORDER BY CreatedDate DESC LIMIT :queryLimit OFFSET :queryOffset];
-      for(ProcessInstance ps : processInstaList )
-                               {
-          if(!ps.WorkItems.isEmpty()){
-              SubmittedRecordsWrapper objSubmittedRecordsWrapper = new SubmittedRecordsWrapper();
-              objSubmittedRecordsWrapper.workItemId = ps.WorkItems[0].Id;
-              objSubmittedRecordsWrapper.recordId = ps.TargetObjectId;
-              objSubmittedRecordsWrapper.recordName = ps.TargetObject.Name;
-              objSubmittedRecordsWrapper.comments = '';
-              objSubmittedRecordsWrapper.relatedTo = 'Log_Hour__c';//get the object name using the record id
-              objSubmittedRecordsWrapper.submittedDate = Date.newInstance(ps.CreatedDate.year(),ps.CreatedDate.month(),ps.CreatedDate.day());
-              if(!ps.steps.isEmpty()){
-                  objSubmittedRecordsWrapper.submittedBy = ps.steps[0].OriginalActor.Name;
-                  if(ps.steps[0].Comments == '' || ps.steps[0].Comments == null)
-                  objSubmittedRecordsWrapper.submittercomment = 'No comments from submitter';
-                  else
-                  objSubmittedRecordsWrapper.submittercomment = ps.steps[0].Comments;
-                  lstSubmissionWrapper.add(objSubmittedRecordsWrapper);
-              }
-          }
-      }
-      system.debug(lstSubmissionWrapper.size());
-      System.debug('lstSubmissionWrapper: ' + lstSubmissionWrapper);
-      return lstSubmissionWrapper;
-  }
+
+    for(ProcessInstance ps : processInstaList )
+    {
+        if(!ps.WorkItems.isEmpty())
+        {
+            ProcessInstanceWrapper objProcessInstanceWrapper = new ProcessInstanceWrapper();
+            objProcessInstanceWrapper.workItemId = ps.WorkItems[0].Id;
+            objProcessInstanceWrapper.recordId = ps.TargetObjectId;
+            targetObjIdList.add(ps.TargetObjectId);
+            objProcessInstanceWrapper.comments = '';
+            
+            if(!ps.steps.isEmpty())
+            {
+                objProcessInstanceWrapper.submittedBy = ps.steps[0].OriginalActor.Name;
+                if(ps.steps[0].Comments == '' || ps.steps[0].Comments == null)
+                    objProcessInstanceWrapper.submittercomment = 'No Comments from Submitter';
+                else
+                    objProcessInstanceWrapper.submittercomment = ps.steps[0].Comments;
+                listProcessInstanceWrapper.add(objProcessInstanceWrapper);
+            }
+        }
+    }
+
+    System.debug(listProcessInstanceWrapper.size());
+    System.debug('listProcessInstanceWrapper: ' + listProcessInstanceWrapper);
+
+    List<Log_Hour__c> submitedRecordsData = [Select Id, Name, Daily_Log_Hour__c, Daily_Log_Mins__c, Daily_Task__r.Name From Log_Hour__c WHERE Id IN :targetObjIdList];
+    
+    if(submitedRecordsData.size() > 0)
+    {
+        for (Log_Hour__c log : submitedRecordsData)
+        {   
+            ApprovalWrapper appWrapObj = new ApprovalWrapper();
+            for (ProcessInstanceWrapper prw : listProcessInstanceWrapper) 
+            {
+                if(log.Id == prw.recordId)
+                {
+                    appWrapObj.workItemId       = prw.workItemId ;
+                    appWrapObj.recordId         = prw.recordId ;
+                    appWrapObj.submittedBy      = prw.submittedBy ;
+                    appWrapObj.submittercomment = prw.submittercomment ;
+                    appWrapObj.submittedDate    = prw.submittedDate ;
+                    appWrapObj.comments         = prw.comments ;
+                    appWrapObj.Name             = log.Name ;
+                    appWrapObj.Daily_Log_Hour   = Integer.valueOf(log.Daily_Log_Hour__c) ;
+                    appWrapObj.Daily_Log_Mins   = Integer.valueOf(log.Daily_Log_Mins__c) ;
+                    appWrapObj.Daily_Task       = log.Daily_Task__r.Name ;
+                    listApprovalWrapper.add(appWrapObj);
+                }
+            }
+        }   
+    }
+
+    System.debug('listApprovalWrapper '+listApprovalWrapper);
+    return listApprovalWrapper;
+}
+
+//  getApprovedRecords
+//  getRejectedRecords
   
   @AuraEnabled
-  public static String processRecords(String processType,String strwraprecs){
-      system.debug('processType'+processType);
-      system.debug('wraprecs'+strwraprecs);
-      List<SubmittedRecordsWrapper> wraprecs = (List<SubmittedRecordsWrapper>)System.JSON.deserialize(strwraprecs, List<SubmittedRecordsWrapper>.class);
-      Map<string,SubmittedRecordsWrapper> mapSubmittedRecordsWrapper = new map<String,SubmittedRecordsWrapper>();
+  public static String processRecords(String processType,String strwraprecs)
+  {
+    System.debug('processType'+processType);
+    System.debug('wraprecs'+strwraprecs);
+      List<ProcessInstanceWrapper> wraprecs = (List<ProcessInstanceWrapper>)System.JSON.deserialize(strwraprecs, List<ProcessInstanceWrapper>.class);
+      Map<string,ProcessInstanceWrapper> mapProcessInstanceWrapper = new map<String,ProcessInstanceWrapper>();
       List<String> lstWorkItemIds = new List<String>();
-      for(SubmittedRecordsWrapper iwrap: wraprecs)
+      for(ProcessInstanceWrapper iwrap: wraprecs)
       {
-          mapSubmittedRecordsWrapper.put(iwrap.workItemId,iwrap);
+          mapProcessInstanceWrapper.put(iwrap.workItemId,iwrap);
           lstWorkItemIds.add(iwrap.workItemId);
       }
       
@@ -139,8 +191,8 @@ public with sharing class DailyTimeSheetController
       List<Approval.ProcessWorkitemRequest> lstWorkItemRequest = new List<Approval.ProcessWorkitemRequest>();//ProcessWorkitemRequest class has methods to programmatically process submitted records
       for(String workItemId : lstWorkItemIds){
           Approval.ProcessWorkitemRequest objWorkItemRequest = new Approval.ProcessWorkitemRequest();
-          if(mapSubmittedRecordsWrapper.containsKey(workItemId))
-              objWorkItemRequest.setComments(mapSubmittedRecordsWrapper.get(workItemId).comments);
+          if(mapProcessInstanceWrapper.containsKey(workItemId))
+              objWorkItemRequest.setComments(mapProcessInstanceWrapper.get(workItemId).comments);
           else
               objWorkItemRequest.setComments(comments);
           objWorkItemRequest.setAction(processType);//approve or reject
