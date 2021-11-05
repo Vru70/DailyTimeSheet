@@ -1,6 +1,6 @@
 /**
  * @author            : Vrushabh Uprikar
- * @last modified on  : 01-11-2021
+ * @last modified on  : 05-11-2021
  * @last modified by  : Vrushabh Uprikar
  * Modifications Log
  * Ver   Date         Author             Modification
@@ -81,8 +81,8 @@ export default class Calender extends NavigationMixin(LightningElement) {
     @track userManagerName;
     loggedUserName;
     loggedUserRoleName;
-    loggedUserId = USER_ID;
-    loggedUserManagerId;
+    @track loggedUserId = USER_ID;
+    @track loggedUserManagerId;
 
     @track userIdTogetdata;
 
@@ -183,10 +183,19 @@ export default class Calender extends NavigationMixin(LightningElement) {
         }
     ];
 
-    connectedCallback() {
+    connectedCallback()
+    {
         this.todayDate = new Date();
-        this.dateTrack = this.todayDate;
+        this.dateTrack = new Date();
+        if(USER_MANAGER_ID)
+        {
+            this.getUserLoginDataById(USER_ID);
+        }
         this.setDateandCalDetails();
+    }
+
+    constructor() {
+        super();
         this.title = 'Your Pending Approvals';
         this.showinfiniteLoadingSpinner = true;
         this.wrapperList = [];
@@ -194,11 +203,6 @@ export default class Calender extends NavigationMixin(LightningElement) {
         this.queryLimit = 5;
         this.loadRecords();
     }
-
-    constructor() {
-        super();
-    }
-
 
     setAllDailyLogs(year, totalNumberOfDays, Id) {
         getAllDailyLogs({ year: parseInt(year), id: Id }) // geting data from DailyTimeSheetController

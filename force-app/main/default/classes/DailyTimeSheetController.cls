@@ -1,6 +1,6 @@
 /**
  * @author            : Vrushabh Uprikar
- * @last modified on  : 01-11-2021
+ * @last modified on  : 05-11-2021
  * @last modified by  : Vrushabh Uprikar
  * Modifications Log
  * Ver   Date         Author             Modification
@@ -170,51 +170,76 @@ public with sharing class DailyTimeSheetController
 //  getApprovedRecords
 //  getRejectedRecords
   
-  @AuraEnabled
-  public static String processRecords(String processType,String strwraprecs)
-  {
-    System.debug('processType'+processType);
-    System.debug('wraprecs'+strwraprecs);
-      List<ProcessInstanceWrapper> wraprecs = (List<ProcessInstanceWrapper>)System.JSON.deserialize(strwraprecs, List<ProcessInstanceWrapper>.class);
-      Map<string,ProcessInstanceWrapper> mapProcessInstanceWrapper = new map<String,ProcessInstanceWrapper>();
-      List<String> lstWorkItemIds = new List<String>();
-      for(ProcessInstanceWrapper iwrap: wraprecs)
-      {
-          mapProcessInstanceWrapper.put(iwrap.workItemId,iwrap);
-          lstWorkItemIds.add(iwrap.workItemId);
-      }
+    @AuraEnabled
+    public static String processRecords(String processType,String strwraprecs)
+    {
+        System.debug('processType'+processType);
+        System.debug('wraprecs'+strwraprecs);
+        List<ProcessInstanceWrapper> wraprecs = (List<ProcessInstanceWrapper>)System.JSON.deserialize(strwraprecs, List<ProcessInstanceWrapper>.class);
+        Map<string,ProcessInstanceWrapper> mapProcessInstanceWrapper = new map<String,ProcessInstanceWrapper>();
+        List<String> lstWorkItemIds = new List<String>();
+        for(ProcessInstanceWrapper iwrap: wraprecs)
+        {
+            mapProcessInstanceWrapper.put(iwrap.workItemId,iwrap);
+            lstWorkItemIds.add(iwrap.workItemId);
+        }
       
       //Approve,reject the record programmatically
-      String message = ''; 
-      Integer recordsProcessed = 0;
-      String comments = processType == 'Approve' ? 'Approved' : 'Rejected';
-      List<Approval.ProcessWorkitemRequest> lstWorkItemRequest = new List<Approval.ProcessWorkitemRequest>();//ProcessWorkitemRequest class has methods to programmatically process submitted records
-      for(String workItemId : lstWorkItemIds){
-          Approval.ProcessWorkitemRequest objWorkItemRequest = new Approval.ProcessWorkitemRequest();
-          if(mapProcessInstanceWrapper.containsKey(workItemId))
-              objWorkItemRequest.setComments(mapProcessInstanceWrapper.get(workItemId).comments);
-          else
-              objWorkItemRequest.setComments(comments);
-          objWorkItemRequest.setAction(processType);//approve or reject
-          objWorkItemRequest.setWorkitemId(workItemId);
-          lstWorkItemRequest.add(objWorkItemRequest);
-      }
-      Approval.ProcessResult[] lstProcessResult = Approval.process(lstWorkItemRequest,FALSE);//process method is used for approving/rejecting records depending on setAction attribute
-      for(Approval.ProcessResult processResult : lstProcessResult){
-          if(processResult.isSuccess()){
-              recordsProcessed++;
-          }
-          else{
-              for(Database.Error error : processResult.getErrors()){
+        String message = ''; 
+        Integer recordsProcessed = 0;
+        String comments = processType == 'Approve' ? 'Approved' : 'Rejected';
+        List<Approval.ProcessWorkitemRequest> lstWorkItemRequest = new List<Approval.ProcessWorkitemRequest>();//ProcessWorkitemRequest class has methods to programmatically process submitted records
+        for(String workItemId : lstWorkItemIds)
+        {
+            Approval.ProcessWorkitemRequest objWorkItemRequest = new Approval.ProcessWorkitemRequest();
+            if(mapProcessInstanceWrapper.containsKey(workItemId))
+                objWorkItemRequest.setComments(mapProcessInstanceWrapper.get(workItemId).comments);
+            else
+                objWorkItemRequest.setComments(comments);
+            objWorkItemRequest.setAction(processType);//approve or reject
+            objWorkItemRequest.setWorkitemId(workItemId);
+            lstWorkItemRequest.add(objWorkItemRequest);
+        }
+        Approval.ProcessResult[] lstProcessResult = Approval.process(lstWorkItemRequest,FALSE);//process method is used for approving/rejecting records depending on setAction attribute
+        for(Approval.ProcessResult processResult : lstProcessResult)
+        {
+            if(processResult.isSuccess())
+            {
+                recordsProcessed++;
+            }
+            else
+            {
+              for(Database.Error error : processResult.getErrors())
+              {
                   message += error.getMessage();
               }
-          }
-      }
-      if(recordsProcessed == lstWorkItemIds.size()){
-          message = 'All records are '+comments+' successfully';
-      }
-      System.debug('message: ' + message);
-      return message;
-  }
+            }
+        }
+        if(recordsProcessed == lstWorkItemIds.size())
+        {
+            message = 'All records are '+comments+' successfully';
+        }
+        System.debug('message: ' + message);
+        return message;
+    }
+
+    // public static void emailTemplateForCalendar(Log_Hour__c logHr)
+    // {
+    //     Messaging.SingleEmailMessage message = new Messaging.SingleEmailMessage();
+    //     message.toAddresses = new String[] {emailAddress};
+    //     message.optOutPolicy = 'FILTER';
+    //     message.subject = 'Daily Time Log has been '+ stepOfApprovalRequest + ' for approval';
+    //     String body = 'Hi ' + con.firstname + ' ' + con.lastname + ',  \n ';
+    //     message.plainTextBody = 'Hi,';
+    //     Messaging.SingleEmailMessage[] messages =   new List<Messaging.SingleEmailMessage> {message};
+    //     Messaging.SendEmailResult[] results = Messaging.sendEmail(messages);
+
+    //     if (results[0].success)
+    //     {
+    //         System.debug('The email was sent successfully.');
+    //     } else {
+    //         System.debug('The email failed to send: ' + results[0].errors[0].message);
+    //     }
+    // }
 }
 
