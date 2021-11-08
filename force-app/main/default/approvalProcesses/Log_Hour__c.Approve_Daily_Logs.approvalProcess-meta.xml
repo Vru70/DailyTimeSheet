@@ -21,6 +21,12 @@
     </approvalPageFields>
     <approvalStep>
         <allowDelegate>false</allowDelegate>
+        <approvalActions>
+            <action>
+                <name>Approved_Log_Request</name>
+                <type>Alert</type>
+            </action>
+        </approvalActions>
         <assignedApprover>
             <approver>
                 <type>userHierarchyField</type>
@@ -28,8 +34,13 @@
         </assignedApprover>
         <label>Summited for Approval</label>
         <name>Summited_for_Approval</name>
+        <rejectionActions>
+            <action>
+                <name>Rejected_Log_Request</name>
+                <type>Alert</type>
+            </action>
+        </rejectionActions>
     </approvalStep>
-    <emailTemplate>unfiled$public/Approve_Daily_Logs</emailTemplate>
     <enableMobileDeviceAccess>false</enableMobileDeviceAccess>
     <entryCriteria>
         <criteriaItems>
@@ -38,14 +49,32 @@
             <value>Billable,Non Billable</value>
         </criteriaItems>
     </entryCriteria>
+    <finalApprovalActions>
+        <action>
+            <name>Approved_Daily_Logs</name>
+            <type>FieldUpdate</type>
+        </action>
+    </finalApprovalActions>
     <finalApprovalRecordLock>true</finalApprovalRecordLock>
+    <finalRejectionActions>
+        <action>
+            <name>Rejected_Daily_Logs</name>
+            <type>FieldUpdate</type>
+        </action>
+    </finalRejectionActions>
     <finalRejectionRecordLock>false</finalRejectionRecordLock>
+    <initialSubmissionActions>
+        <action>
+            <name>Submitted_Log_Request</name>
+            <type>Alert</type>
+        </action>
+    </initialSubmissionActions>
     <label>Approve Daily Logs</label>
     <nextAutomatedApprover>
         <useApproverFieldOfRecordOwner>true</useApproverFieldOfRecordOwner>
         <userHierarchyField>Manager</userHierarchyField>
     </nextAutomatedApprover>
     <processOrder>1</processOrder>
-    <recordEditability>AdminOnly</recordEditability>
+    <recordEditability>AdminOrCurrentApprover</recordEditability>
     <showApprovalHistory>true</showApprovalHistory>
 </ApprovalProcess>
