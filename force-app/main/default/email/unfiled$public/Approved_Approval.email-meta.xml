@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <description>Approved for approval</description>
+    <encodingKey>UTF-8</encodingKey>
+    <name>Approved Approval</name>
+    <style>none</style>
+    <subject>Your Daily Log has been Approved</subject>
+    <textOnly>Hi  {!User.Name},
+
+Your Log request has been approved by your Manager {!User.Manager}
+
+Thank You!</textOnly>
+    <type>custom</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

@@ -1,0 +1,5 @@
+Hi  {!User.Name},
+
+Your Daily Log request has been Rejected by your Manager {!User.Manager}
+
+Thank You!

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <description>rejected</description>
+    <encodingKey>UTF-8</encodingKey>
+    <name>rejected Approval</name>
+    <style>none</style>
+    <subject>Your Daily Log request has been rejected</subject>
+    <textOnly>Hi  {!User.Name},
+
+Your Daily Log request has been Rejected by your Manager {!User.Manager}
+
+Thank You!</textOnly>
+    <type>custom</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

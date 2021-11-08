@@ -1,0 +1,5 @@
+Hi  {!User.Name},
+
+Your Log request has been submitted to your Manager {!User.Manager}  for the approval process.
+
+Thank You!
